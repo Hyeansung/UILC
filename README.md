@@ -1,4 +1,4 @@
-# UniformIlluminationLEDArrangementCalculatiuon
+# UILC (**U**niform **I**llumination **L**ED arrangement **C**alculatiuon)
 This repository is for the calculation of the uniform illumincation LED arrangement for target plane
 
 This project is written with C and offer as C library
