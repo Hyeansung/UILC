@@ -79,19 +79,38 @@ double UILC_f_Morena_getdm_linear(const UILC_LamberLED l, const int n, const uns
     double dm =0.0;
     double l_x_lower = 0.0;
     double l_x_upper = 1.0;
+    int status =0;
+    int iter =0, max_iter = itetnum;
+    UILC_fparams_linear l_params = {l.m,n};
+    gsl_function F;
+    F.function = &UILC_f_Morena_Linear;
+    F.params = &l_params;
 
     if(GSL_IS_ODD(n)){ // n = odd case we need to find the local minimum case
+
+        /*
+        There are 3 algorithms are provided in GSL library for find minimization of the function.
+        - gsl_min_fminimizer_goldensection : The simplest method of bracketing the minimum of a function. It is the slowest algorithm provided by the library, with linear convergence.
+        - gsl_min_fminimizer_brent : Using parabolic interpolation with the golden section algorithm. This produces a fast algorithm which is still robust.
+        - gsl_min_fminimizer_quad_golden : This is a variant of Brent’s algorithm which uses the safeguarded step-length algorithm of Gill and Murray
+        */
         const gsl_min_fminimizer_type * T = gsl_min_fminimizer_goldensection;
         gsl_min_fminimizer * s = gsl_min_fminimizer_alloc (T);
+        gsl_min_fminimizer_set(s,&F,dm,l_x_lower,l_x_upper);
+
+        do{
+            iter++;
+            status = gsl_min_fminimizer_iterate (s);
+            dm = gsl_min_fminimizer_x_minimum (s);
+            l_x_lower = gsl_root_fsolver_x_lower (s);
+            l_x_upper = gsl_root_fsolver_x_upper (s);
+            status = gsl_root_test_interval(l_x_lower, l_x_upper, 0, precison )
+        }
+        while(status == GSL_CONTINUE && iter < max_iter)
+        
+        gsl_min_fminnizmizer_free(s);
     }
     else{ // n = even then we need to find the root of the function.
-        int status =0;
-        int iter =0, max_iter = itetnum;
-        UILC_fparams_linear l_params = {l.m,n};
-        gsl_function F;
-        F.function = &UILC_f_Morena_Linear;
-        F.params = &l_params;
-        
         /*
         There are 3 algorithms are provided in GSL library for find root without derivative.
         - gsl_root_fsolver_bisection : simplest method, slowest algorithms with linear convergence.
@@ -100,7 +119,7 @@ double UILC_f_Morena_getdm_linear(const UILC_LamberLED l, const int n, const uns
         */
         const gsl_root_fsolver_type * T = gsl_root_fsolver_bisection;
         gsl_root_fsolver * s = gsl_root_fsolver_alloc(T);
-        gsl_root_fsolver_set(s,&F,x_lower,x_upper);
+        gsl_root_fsolver_set(s,&F,l_x_lower,l_x_upper);
 
         do{
             iter++;

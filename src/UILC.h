@@ -3,9 +3,11 @@
 */
 
 #include <errno.h>
+#include <math.h>
 #include <gsl/gsl_roots.h>
 #include <gsl/gsl_math.h>
-#include <math.h>
+#include <gsl/gsl_min.h>
+
 
 typedef struct{
     double intensity;
