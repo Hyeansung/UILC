@@ -55,7 +55,7 @@ double UILC_f_Morena_Linear(const double x, void* p){
     }
     return y;
 }
-double UILC_f_Morena_Rectange(const double x, void * p){
+double UILC_f_Morena_Rectangle(const double x, void * p){
 
     UILC_fparams_Rectangle * params = (UILC_fparams_Rectangle *)p;
     const unsigned int m = (params->m);
@@ -146,7 +146,7 @@ double UILC_f_Morena_getdm_Rectangle(const UILC_LamberLED l, const unsigned int 
     }
     UILC_fparams_Rectangle R_param = {l.m, N, M};
     gsl_function F;
-    F.function = 
+    F.function = &UILC_f_Morena_getdm_Rectangle;
     if( GSL_IS_ODD(N) && GSL_IS_ODD(M)){
 
     } 
@@ -177,3 +177,4 @@ double UILC_f_SingleLED_intensity(const UILC_LamberLED l, const double led_locat
     return( l.intensity/pow((1+ gsl_pow_2(d/H)),l.m/2+1) );
 }
 
+gsl_block * UILC_f_target_intensity(const UILC_LamberLED l, const gsl_block * arrangemennt, const double dm, const double distance )
