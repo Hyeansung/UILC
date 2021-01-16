@@ -40,10 +40,12 @@ typedef struct{
     unsigned int M;
 } UILC_fparams_Rectangle;
 
+#define Linear 'L' 
+#define Square 'S'
 
 // LED optimization arrays parts -----------------------------------------------------------------------------------------
 // These are the functions for the Root or minimum point finding in the Morena's analytic solution.
-// There are two case exist Linear, Rectangle grid arrangement.
+// There are two case exist Linear, Square grid arrangement.
 double UILC_f_Morena_Linear(const double x, void* p){
 
     UILC_fparams_linear * params = (UILC_fparams_linear *)p;
@@ -55,7 +57,7 @@ double UILC_f_Morena_Linear(const double x, void* p){
     }
     return y;
 }
-double UILC_f_Morena_Rectangle(const double x, void * p){
+double UILC_f_Morena_SquareGrid(const double x, void * p){
 
     UILC_fparams_Rectangle * params = (UILC_fparams_Rectangle *)p;
     const unsigned int m = (params->m);
@@ -74,14 +76,14 @@ double UILC_f_Morena_Rectangle(const double x, void * p){
 
 // These functions will return the Morena's analytic solution in the single double number type as the distance of the give LEDs.
 // Two cases are here, Linear and Rectangle.
-double UILC_f_Morena_getdm_linear(const UILC_LamberLED l, const int n, const unsigned int itetnum, const unsigned double precison){
+double UILC_f_Morena_getdm_linear(const UILC_LamberLED l, const int led_n, const unsigned int itetnum, const unsigned double precison){
     
     double dm =0.0;
     double l_x_lower = 0.0;
     double l_x_upper = 1.0;
     int status =0;
     int iter =0, max_iter = itetnum;
-    UILC_fparams_linear l_params = {l.m,n};
+    UILC_fparams_linear l_params = {l.m,led_n};
     gsl_function F;
     F.function = &UILC_f_Morena_Linear;
     F.params = &l_params;
@@ -139,22 +141,94 @@ double UILC_f_Morena_getdm_linear(const UILC_LamberLED l, const int n, const uns
     
 
 }
-double UILC_f_Morena_getdm_Rectangle(const UILC_LamberLED l, const unsigned int n, const unsigned int N, const unsigned int M){
+double UILC_f_Morena_getdm_SquareGrid(const UILC_LamberLED l, const unsigned int led_n, const unsigned int N, const unsigned int M, const unsigned int itetnum, const unsigned double precison){
     // this function won't return the negative double vlaue unless there is an error
-    if(n != N*M){
+    if(led_n != N*M){
         return -1.0
     }
+
+    double dm =0.0;
+    double l_x_lower = 0.0;
+    double l_x_upper = 1.0;
+    int status =0;
+    int iter =0, max_iter = itetnum;
     UILC_fparams_Rectangle R_param = {l.m, N, M};
     gsl_function F;
-    F.function = &UILC_f_Morena_getdm_Rectangle;
-    if( GSL_IS_ODD(N) && GSL_IS_ODD(M)){
+    F.function = &UILC_f_Morena_SquareGrid;
+    F.params = &l_params;
 
+    if( GSL_IS_ODD(N) && GSL_IS_ODD(M)){ // both odd Minimization
+        const gsl_min_fminimizer_type * T = gsl_min_fminimizer_goldensection;
+        gsl_min_fminimizer * s = gsl_min_fminimizer_alloc (T);
+        gsl_min_fminimizer_set(s,&F,dm,l_x_lower,l_x_upper);
+
+        do{
+            iter++;
+            status = gsl_min_fminimizer_iterate (s);
+            dm = gsl_min_fminimizer_x_minimum (s);
+            l_x_lower = gsl_root_fsolver_x_lower (s);
+            l_x_upper = gsl_root_fsolver_x_upper (s);
+            status = gsl_root_test_interval(l_x_lower, l_x_upper, 0, precison )
+        }
+        while(status == GSL_CONTINUE && iter < max_iter)
+        
+        gsl_min_fminnizmizer_free(s);
     } 
-    else if(GSL_IS_EVEN(N) && GSL_IS_EVEN(M)){
+    else if(GSL_IS_EVEN(N) && GSL_IS_EVEN(M)){ // both even: Root
+        const gsl_root_fsolver_type * T = gsl_root_fsolver_bisection;
+        gsl_root_fsolver * s = gsl_root_fsolver_alloc(T);
+        gsl_root_fsolver_set(s,&F,l_x_lower,l_x_upper);
+
+        do{
+            iter++;
+            status = gsl_root_fsolver_iterate (s);
+            dm = gsl_root_fsolver_root (s);
+            l_x_lower = gsl_root_fsolver_x_lower (s);
+            l_x_upper = gsl_root_fsolver_x_upper (s);
+            status = gsl_root_test_interval(l_x_lower, l_x_upper, 0, precison )
+        }
+        while(status == GSL_CONTINUE && iter < max_iter)
+
+        gsl_root_fsolver_free(s);
 
     }
-    else{
+    else{ // Minimum point or the root
+        const gsl_min_fminimizer_type * T = gsl_min_fminimizer_goldensection;
+        gsl_min_fminimizer * s = gsl_min_fminimizer_alloc (T);
+        gsl_min_fminimizer_set(s,&F,dm,l_x_lower,l_x_upper);
 
+        do{
+            iter++;
+            status = gsl_min_fminimizer_iterate (s);
+            dm = gsl_min_fminimizer_x_minimum (s);
+            l_x_lower = gsl_root_fsolver_x_lower (s);
+            l_x_upper = gsl_root_fsolver_x_upper (s);
+            status = gsl_root_test_interval(l_x_lower, l_x_upper, 0, precison )
+        }
+        while(status == GSL_CONTINUE && iter < max_iter)
+        
+        gsl_min_fminnizmizer_free(s);
+
+        if(dm <0.0){
+            const gsl_root_fsolver_type * T = gsl_root_fsolver_bisection;
+            gsl_root_fsolver * s = gsl_root_fsolver_alloc(T);
+            gsl_root_fsolver_set(s,&F,l_x_lower,l_x_upper);
+               
+            l_x_upper = dm; // if dm <0.0 then there is a first root on interval and it is enought to serach 0 to dm;minium point.
+            
+            do{
+                iter++;
+                status = gsl_root_fsolver_iterate (s);
+                dm = gsl_root_fsolver_root (s);
+                l_x_lower = gsl_root_fsolver_x_lower (s);
+                l_x_upper = gsl_root_fsolver_x_upper (s);
+                status = gsl_root_test_interval(l_x_lower, l_x_upper, 0, precison )
+            }
+            while(status == GSL_CONTINUE && iter < max_iter)
+
+            gsl_root_fsolver_free(s);
+
+        }
     }
 }
 
@@ -177,4 +251,17 @@ double UILC_f_SingleLED_intensity(const UILC_LamberLED l, const double led_locat
     return( l.intensity/pow((1+ gsl_pow_2(d/H)),l.m/2+1) );
 }
 
-gsl_block * UILC_f_target_intensity(const UILC_LamberLED l, const gsl_block * arrangemennt, const double dm, const double distance )
+gsl_matrix * UILC_f_target_intensity(const UILC_LamberLED l, const gsl_block * arrangemennt, const double dm, const double distance ){
+
+}
+
+gsl_matrix * UILC_f_get_arrangement(const unsigned double dm, const char tp, const unsigned int N, const unsigend int M){
+    if(tp == Linear){
+        gsl_matrix* arr = gsl_matrix_calloc(1,N);
+    }
+    else if(tp == Square){
+        gsl_matrix* arr = gsl_matrix_calloc(N,M);
+
+    }
+
+}
