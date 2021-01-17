@@ -1,5 +1,7 @@
 /*
-Programmer: Kim, Hyeon Sung
+Licence: GPL 
+
+Author: Kim, Hyeon Sung
 Date: 2021.01.13
 
 This code is a library functions for the calculation the uniform illuination patteren with 
@@ -18,30 +20,6 @@ Ivan Morena's paper, Simulated Annealing Algorithm and other methods.
 */
 
 #include "UILC.h"
-
-#include <errno.h>
-#include <gsl/gsl_roots.h>
-#include <gsl/gsl_math.h>
-#include <math.h>
-
-typedef struct{
-    double intensity;
-    unsigned int m;
-} UILC_LamberLED;
-
-typedef struct{
-    unsigned int m;
-    unsigned int n;
-} UILC_fparams_linear;
-
-typedef struct{
-    unsigned int m;
-    unsigned int N;
-    unsigned int M;
-} UILC_fparams_Rectangle;
-
-#define Linear 'L' 
-#define Square 'S'
 
 // LED optimization arrays parts -----------------------------------------------------------------------------------------
 // These are the functions for the Root or minimum point finding in the Morena's analytic solution.
@@ -244,24 +222,61 @@ double UILC_f_Morena_getdm_SquareGrid(const UILC_LamberLED l, const unsigned int
 
 // LED optimization arrays parts end-----------------------------------------------------------------------------------------
 
-double UILC_f_SingleLED_intensity(const UILC_LamberLED l, const double led_location,const double led_height, const double target_location, const double target_distance){
+inline double UILC_f_SingleLED_intensity(const UILC_LamberLED l, const double led_location,const double led_height, const double target_location, const double target_distance){
     double H = abs(target_distance - led_height);
     double d = abs(led_location - target_location);
 
     return( l.intensity/pow((1+ gsl_pow_2(d/H)),l.m/2+1) );
 }
 
-gsl_matrix * UILC_f_target_intensity(const UILC_LamberLED l, const gsl_block * arrangemennt, const double dm, const double distance ){
+inline double  UILC_f_target_intensity(const UILC_LamberLED l, const UILC_LED_Arr arr, const unsigned int N, const unsigned int M, const double target_location, const double target_distance ){
+    double y =0.0;
+
+    for(i=0, i<N,i++){
+        for(j=0 ; j<M; j++){
+             y += UILC_f_SingleLED_intensity(l, arr[i].location, arr[i].height, target_location, target_distance);
+        }
+    }
+    return (y);
+}
+// 상기 함수 수정 필요
+
+
+double UILC_f_get_Arr_coor_value(const UILC_LED_Arr * arr, const unsigned int N, const unsigned int M, const int i, const int j,const int k){
+    if(i>(N-1) | j > (M-1)){
+        return error; // Error handling 
+    }
+    return (*(arr->coor + 3*i+j)[k])
+}
+
+//get the location arrangement of the LED with given distance_max, number of LED.
+UILC_LED_Arr * UILC_f_Morena_get_Arr(const unsigned double dm, const char tp, const unsigned int N, const unsigned int M){
+    if(M == 0){
+        M =1;
+    }
+    gsl_vector * arr = gsl_vector_calloc( N * M *3);
+
+    for(i=0; i<N, i++){
+        for(j=0; j<M ; j++){
+            
+            *(arr + i*3 + j)[0] = (i-(N-1)/2)*dm ;
+            *(arr + i*3 + j)[1] = (j-(M-1)/2)*dm ;
+            *(arr + i*3 + j)[2] = 0.0 ;
+        }
+    }
+
+    UILC_LED_Arr Arr = {N, M, arr};
+    return(Arr);
+}
+
+// Get array of the LED with simulated annealing algorithms
+UILC_LED_Arr * UILC_f_Siman_get_Arr(const UILC_LamberLED l, const UILC_LED_Arr * pre, const unsigned int N_of_LED, ){
 
 }
 
-gsl_matrix * UILC_f_get_arrangement(const unsigned double dm, const char tp, const unsigned int N, const unsigend int M){
-    if(tp == Linear){
-        gsl_matrix* arr = gsl_matrix_calloc(1,N);
-    }
-    else if(tp == Square){
-        gsl_matrix* arr = gsl_matrix_calloc(N,M);
 
-    }
-
+void UILC_f_Free_LED_Arr(UILC_LED_Arr *arr){
+    gsl_vector_free(arr->coor);
 }
+
+
