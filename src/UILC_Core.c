@@ -270,7 +270,11 @@ UILC_LED_Arr * UILC_f_Morena_get_Arr(const unsigned double dm, const char tp, co
 }
 
 // Get array of the LED with simulated annealing algorithms
-UILC_LED_Arr * UILC_f_Siman_get_Arr(const UILC_LamberLED l, const UILC_LED_Arr * pre, const unsigned int N_of_LED, ){
+UILC_LED_Arr * UILC_f_Siman_get_Arr(const UILC_LamberLED l, const UILC_LED_Arr * pre, const unsigned int N_of_LED, const unsigned int temperature){
+
+}
+
+UILC_LED_Arr * UILC_f_Genetic_get_Arr(const UILC_LamberLED l, const UILC_LED_Arr * pre, const unsigned int N_of_LED, ){
 
 }
 
