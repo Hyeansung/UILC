@@ -54,7 +54,12 @@ double UILC_f_Morena_SquareGrid(const double x, void * p){
 
 // These functions will return the Morena's analytic solution in the single double number type as the distance of the give LEDs.
 // Two cases are here, Linear and Rectangle.
-double UILC_f_Morena_getdm_linear(const UILC_LamberLED l, const int led_n, const unsigned int itetnum, const unsigned double precison){
+double UILC_f_Morena_getdm_linear(
+    const UILC_LamberLED l, 
+    const int led_n, 
+    const unsigned int itetnum, 
+    const unsigned double precison)
+    {
     
     double dm =0.0;
     double l_x_lower = 0.0;
@@ -119,7 +124,14 @@ double UILC_f_Morena_getdm_linear(const UILC_LamberLED l, const int led_n, const
     
 
 }
-double UILC_f_Morena_getdm_SquareGrid(const UILC_LamberLED l, const unsigned int led_n, const unsigned int N, const unsigned int M, const unsigned int itetnum, const unsigned double precison){
+double UILC_f_Morena_getdm_SquareGrid(
+    const UILC_LamberLED l, 
+    const unsigned int led_n, 
+    const unsigned int N, 
+    const unsigned int M, 
+    const unsigned int itetnum, 
+    const unsigned double precison)
+    {
     // this function won't return the negative double vlaue unless there is an error
     if(led_n != N*M){
         return -1.0
@@ -222,18 +234,33 @@ double UILC_f_Morena_getdm_SquareGrid(const UILC_LamberLED l, const unsigned int
 
 // LED optimization arrays parts end-----------------------------------------------------------------------------------------
 
-inline double UILC_f_SingleLED_intensity(const UILC_LamberLED l, const double led_location,const double led_height, const double target_location, const double target_distance){
+inline double UILC_f_SingleLED_intensity(
+    const UILC_LamberLED l, 
+    const double led_location,
+    const double led_height, 
+    const double target_location, 
+    const double target_distance)
+    {
     double H = abs(target_distance - led_height);
     double d = abs(led_location - target_location);
 
     return( l.intensity/pow((1+ gsl_pow_2(d/H)),l.m/2+1) );
 }
 
-inline double  UILC_f_target_intensity(const UILC_LamberLED l, const UILC_LED_Arr arr, const unsigned int N, const unsigned int M, const double target_location, const double target_distance ){
+inline double  UILC_f_target_intensity(
+    const UILC_LamberLED l, 
+    const UILC_LED_Arr arr, 
+    const unsigned int N, 
+    const unsigned int M, 
+    const double target_location, 
+    const double target_distance )
+    {
     double y =0.0;
 
-    for(i=0, i<N,i++){
-        for(j=0 ; j<M; j++){
+    for(i=0, i<N,i++)
+    {
+        for(j=0 ; j<M; j++)
+        {
              y += UILC_f_SingleLED_intensity(l, arr[i].location, arr[i].height, target_location, target_distance);
         }
     }
@@ -242,15 +269,28 @@ inline double  UILC_f_target_intensity(const UILC_LamberLED l, const UILC_LED_Ar
 // 상기 함수 수정 필요
 
 
-double UILC_f_get_Arr_coor_value(const UILC_LED_Arr * arr, const unsigned int N, const unsigned int M, const int i, const int j,const int k){
-    if(i>(N-1) | j > (M-1)){
+double UILC_f_get_Arr_coor_value(
+    const UILC_LED_Arr * arr, 
+    const unsigned int N, 
+    const unsigned int M, 
+    const int i, 
+    const int j,
+    const int k)
+    {
+    if(i>(N-1) | j > (M-1))
+    {
         return error; // Error handling 
     }
     return (*(arr->coor + 3*i+j)[k])
 }
 
 //get the location arrangement of the LED with given distance_max, number of LED.
-UILC_LED_Arr * UILC_f_Morena_get_Arr(const unsigned double dm, const char tp, const unsigned int N, const unsigned int M){
+UILC_LED_Arr * UILC_f_Morena_get_Arr(
+    const unsigned double dm, 
+    const char tp, 
+    const unsigned int N, 
+    const unsigned int M)
+    {
     if(M == 0){
         M =1;
     }
@@ -270,11 +310,20 @@ UILC_LED_Arr * UILC_f_Morena_get_Arr(const unsigned double dm, const char tp, co
 }
 
 // Get array of the LED with simulated annealing algorithms
-UILC_LED_Arr * UILC_f_Siman_get_Arr(const UILC_LamberLED l, const UILC_LED_Arr * pre, const unsigned int N_of_LED, const unsigned int temperature){
+UILC_LED_Arr * UILC_f_Siman_get_Arr(
+    const UILC_LamberLED l, 
+    const UILC_LED_Arr * pre, 
+    const unsigned int N_of_LED, 
+    const unsigned int temperature)
+    {
 
 }
 
-UILC_LED_Arr * UILC_f_Genetic_get_Arr(const UILC_LamberLED l, const UILC_LED_Arr * pre, const unsigned int N_of_LED, ){
+UILC_LED_Arr * UILC_f_Genetic_get_Arr(
+    const UILC_LamberLED l, 
+    const UILC_LED_Arr * pre, 
+    const unsigned int N_of_LED, )
+    {
 
 }
 
