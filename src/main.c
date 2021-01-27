@@ -6,7 +6,7 @@
 
 int main(void)
 {
-    UILC_LamberLED led = {0.0,1}
+    UILC_LamberLED led = {0.0,1};
     double Width = 0.0;
     double D = 0.0;
     unsigned int init_led = 1;
@@ -16,9 +16,9 @@ int main(void)
     //
 
     printf("Enter the Intensity and the Lamber number:");
-    scanf("%e %d",&(led.intensity), &(led.m));
+    scanf("%le %d",&(led.intensity), &(led.m));
     printf("Enter the line length and target distance:");
-    scanf("%e %e", &Width,&D);
+    scanf("%le %le", &Width, &D);
     printf("Enter the initial Morena led number(as many as possible):");
     scanf("%d",&init_led);
     printf("Select the min/root method sep with space, Default is 1,1\n   Root      Minimum\n1: BISECTION GOLDENSECTION\n2: FALSEPOS  BRENT_Min\n3: BRENT_Roo QUADGOLDEN\nExample, Root: FASLEPOS, Min: FOLDENSECTION: \"2 1\"\nenter: ");
@@ -30,7 +30,7 @@ int main(void)
     iter = iter <0 ? 1000 : iter;
 
 
-    int dm = UILC_f_MOrena_getdm_Linear();
+    int dm = UILC_f_Morena_getdm_Linear();
 
     int i=0;
     while(i>=0)

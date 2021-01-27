@@ -59,13 +59,13 @@ double UILC_f_Morena_SquareGrid(const double x, void * p)
 
 // These functions will return the Morena's analytic solution in the single double number type as the distance of the give LEDs.
 // Two cases are here, Linear and Rectangle.
-double UILC_f_Morena_getdm_linear(
+double UILC_f_Morena_getdm_Linear(
     const UILC_LamberLED l, 
     const int led_n, 
     const unsigned int itetnum, 
     const unsigned int min_selector,
     const unsigned int roo_selector,
-    const unsigned double precison)
+    const double precison)
 {
     
     double dm =0.0;
@@ -78,8 +78,8 @@ double UILC_f_Morena_getdm_linear(
     F.function = &UILC_f_Morena_Linear;
     F.params = &l_params;
 
-    if(GSL_IS_ODD(n))
-    { // n = odd case we need to find the local minimum case
+    if(GSL_IS_ODD(led_n))
+    { // led_n = odd case we need to find the local minimum case
 
         /*
         There are 3 algorithms are provided in GSL library for find minimization of the function.
@@ -104,11 +104,11 @@ double UILC_f_Morena_getdm_linear(
             dm = gsl_min_fminimizer_x_minimum (s);
             l_x_lower = gsl_root_fsolver_x_lower (s);
             l_x_upper = gsl_root_fsolver_x_upper (s);
-            status = gsl_root_test_interval(l_x_lower, l_x_upper, 0, precison )
+            status = gsl_root_test_interval(l_x_lower, l_x_upper, 0, precison );
         }
-        while(status == GSL_CONTINUE && iter < max_iter)
+        while(status == GSL_CONTINUE && iter < max_iter);
         
-        gsl_min_fminnizmizer_free(s);
+        gsl_min_fminimizer_free(s);
     }
     else
     { // n = even then we need to find the root of the function.
@@ -136,9 +136,9 @@ double UILC_f_Morena_getdm_linear(
             dm = gsl_root_fsolver_root (s);
             l_x_lower = gsl_root_fsolver_x_lower (s);
             l_x_upper = gsl_root_fsolver_x_upper (s);
-            status = gsl_root_test_interval(l_x_lower, l_x_upper, 0, precison )
+            status = gsl_root_test_interval(l_x_lower, l_x_upper, 0, precison );
         }
-        while(status == GSL_CONTINUE && iter < max_iter)
+        while(status == GSL_CONTINUE && iter < max_iter);
 
         gsl_root_fsolver_free(s);
         
@@ -157,12 +157,12 @@ double UILC_f_Morena_getdm_SquareGrid( // return the dm for Square Grid
     const unsigned int itetnum, 
     const unsigned int min_selector,
     const unsigned int roo_selector,
-    const unsigned double precison)
+    const double precison)
 {
     // this function won't return the negative double vlaue unless there is an error
     if(led_n != N*M)
     {
-        return -1.0
+        return -1.0;
     }
 
     double dm =0.0;
@@ -173,7 +173,7 @@ double UILC_f_Morena_getdm_SquareGrid( // return the dm for Square Grid
     UILC_fparams_Rectangle R_param = {l.m, N, M};
     gsl_function F;
     F.function = &UILC_f_Morena_SquareGrid;
-    F.params = &R_params;
+    F.params = &R_param;
 
     if( GSL_IS_ODD(N) && GSL_IS_ODD(M))
     { // both odd Minimization
@@ -195,9 +195,9 @@ double UILC_f_Morena_getdm_SquareGrid( // return the dm for Square Grid
             dm = gsl_min_fminimizer_x_minimum (s);
             l_x_lower = gsl_root_fsolver_x_lower (s);
             l_x_upper = gsl_root_fsolver_x_upper (s);
-            status = gsl_root_test_interval(l_x_lower, l_x_upper, 0, precison )
+            status = gsl_root_test_interval(l_x_lower, l_x_upper, 0, precison );
         }
-        while(status == GSL_CONTINUE && iter < max_iter)
+        while(status == GSL_CONTINUE && iter < max_iter);
         
         gsl_min_fminnizmizer_free(s);
     } 
@@ -221,9 +221,9 @@ double UILC_f_Morena_getdm_SquareGrid( // return the dm for Square Grid
             dm = gsl_root_fsolver_root (s);
             l_x_lower = gsl_root_fsolver_x_lower (s);
             l_x_upper = gsl_root_fsolver_x_upper (s);
-            status = gsl_root_test_interval(l_x_lower, l_x_upper, 0, precison )
+            status = gsl_root_test_interval(l_x_lower, l_x_upper, 0, precison );
         }
-        while(status == GSL_CONTINUE && iter < max_iter)
+        while(status == GSL_CONTINUE && iter < max_iter);
 
         gsl_root_fsolver_free(s);
 
@@ -249,9 +249,9 @@ double UILC_f_Morena_getdm_SquareGrid( // return the dm for Square Grid
             dm = gsl_min_fminimizer_x_minimum (s);
             l_x_lower = gsl_root_fsolver_x_lower (s);
             l_x_upper = gsl_root_fsolver_x_upper (s);
-            status = gsl_root_test_interval(l_x_lower, l_x_upper, 0, precison )
+            status = gsl_root_test_interval(l_x_lower, l_x_upper, 0, precison );
         }
-        while(status == GSL_CONTINUE && iter < max_iter)
+        while(status == GSL_CONTINUE && iter < max_iter);
         
         gsl_min_fminnizmizer_free(s);
 
@@ -285,9 +285,9 @@ double UILC_f_Morena_getdm_SquareGrid( // return the dm for Square Grid
                 dm = gsl_root_fsolver_root (s);
                 l_x_lower = gsl_root_fsolver_x_lower (s);
                 l_x_upper = gsl_root_fsolver_x_upper (s);
-                status = gsl_root_test_interval(l_x_lower, l_x_upper, 0, precison )
+                status = gsl_root_test_interval(l_x_lower, l_x_upper, 0, precison );
             }
-            while(status == GSL_CONTINUE && iter < max_iter)
+            while(status == GSL_CONTINUE && iter < max_iter);
 
             gsl_root_fsolver_free(s);
 
@@ -302,7 +302,7 @@ double UILC_f_Morena_getdm_SquareGrid( // return the dm for Square Grid
 // Given led parameters and the number of the LED, shape.
 UILC_LED_Arr * UILC_f_Morena_OptiArrange(
     const UILC_LamberLED l,
-    const unsinged int led_n,
+    const unsigned int led_n,
     const unsigned int N,
     const unsigned int M)
 {
@@ -339,9 +339,9 @@ inline double  UILC_f_target_intensity(
 {
     double y =0.0;
 
-    for(i=0, i<N,i++)
+    for(int i=0; i < N ;i++)
     {
-        for(j=0 ; j<M; j++)
+        for(int j=0 ; j < M; j++)
         {
              y += UILC_f_SingleLED_intensity(l, arr[i].location, arr[i].height, target_location, target_distance);
         }
@@ -361,25 +361,30 @@ double UILC_f_get_Arr_coor_value(
     {
     if(i>(N-1) | j > (M-1))
     {
-        return error; // Error handling 
+        return(error); // Error handling 
     }
-    return (*(arr->coor + 3*i+j)[k])
+    return (*(arr->coor + 3*i+j)[k]);
 }
 
 //get the location arrangement of the LED with given distance_max, number of LED.
-UILC_LED_Arr * UILC_f_Morena_get_Arr(
-    const unsigned double dm, 
+
+UILC_LED_Arr  UILC_f_Morena_get_Arr(
+    const double dm, 
     const char tp, 
     const unsigned int N, 
     const unsigned int M)
     {
-    if(M == 0){
-        M =1;
+    if(M == 0)
+    {
+        return(error); // Error hander
     }
+
     gsl_vector * arr = gsl_vector_calloc( N * M *3);
 
-    for(i=0; i<N, i++){
-        for(j=0; j<M ; j++){
+    for(int i=0; i<N; i++)
+    {
+        for(int j=0; j<M ; j++)
+        {
             
             *(arr + i*3 + j)[0] = (i-(N-1)/2)*dm ;
             *(arr + i*3 + j)[1] = (j-(M-1)/2)*dm ;
@@ -391,7 +396,7 @@ UILC_LED_Arr * UILC_f_Morena_get_Arr(
     return(Arr);
 }
 
-// Get array of the LED with simulated annealing algorithms
+/* Get array of the LED with simulated annealing algorithms
 UILC_LED_Arr * UILC_f_Siman_get_Arr(
     const UILC_LamberLED l, 
     const UILC_LED_Arr * pre, 
@@ -413,5 +418,5 @@ UILC_LED_Arr * UILC_f_Genetic_get_Arr(
 void UILC_f_Free_LED_Arr(UILC_LED_Arr *arr){
     gsl_vector_free(arr->coor);
 }
-
+*/
 

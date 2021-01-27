@@ -7,11 +7,11 @@ double func_g_for_integral  (double t, void *p){
     double h= (params->h);
     double x= (params->x);
 
-    return I*gsl_pow_int(gsl_hypot(h,x-t),-2*M);
+    return gsl_pow_int(gsl_hypot(h,x-t),-2*M);
 }
 
 double func_f (double x, double t, double height){
-    return I*gsl_pow_int(gsl_hypot(height,x-t),-2*M);
+    return gsl_pow_int(gsl_hypot(height,x-t),-2*M);
 }
 
 double integration_g(const double x, const double wide, const double height,const int tf){

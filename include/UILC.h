@@ -58,18 +58,56 @@ typedef struct{
 double UILC_f_Morena_Linear(const double x, void* p);
 double UILC_f_Morena_SquareGrid(const double x, void * p);
 
-double UILC_f_Morena_getdm_Linear(const UILC_LamberLED l, const int led_n, const unsigned int itetnum, const unsigned int min_selector, const unsigned int roo_selector, const unsigned double precison);
-double UILC_f_Morena_getdm_SquareGrid(const UILC_LamberLED l, const unsigned int led_n, const unsigned int N, const unsigned int M, const unsigned int itetnum, const unsigned double precison);
+double UILC_f_Morena_getdm_Linear(
+    const UILC_LamberLED l, 
+    const int led_n, 
+    const unsigned int itetnum, 
+    const unsigned int min_selector,
+    const unsigned int roo_selector,
+    const double precison);
+double UILC_f_Morena_getdm_SquareGrid( // return the dm for Square Grid
+    const UILC_LamberLED l, 
+    const unsigned int led_n, 
+    const unsigned int N, 
+    const unsigned int M, 
+    const unsigned int itetnum, 
+    const unsigned int min_selector,
+    const unsigned int roo_selector,
+    const double precison);
+
+inline double UILC_f_SingleLED_intensity(
+    const UILC_LamberLED l, 
+    const double led_location,
+    const double led_height, 
+    const double target_location, 
+    const double target_distance);
+
+inline double  UILC_f_target_intensity(
+    const UILC_LamberLED l, 
+    const UILC_LED_Arr arr, 
+    const unsigned int N, 
+    const unsigned int M, 
+    const double target_location, 
+    const double target_distance );
+
+double UILC_f_get_Arr_coor_value(
+    const UILC_LED_Arr * arr, 
+    const unsigned int N, 
+    const unsigned int M, 
+    const int i, 
+    const int j,
+    const int k);
 
 
-double UILC_f_SingleLED_intensity(const UILC_LamberLED l, const double led_location,const double led_height, const double target_location, const double target_distance);
+UILC_LED_Arr  UILC_f_Morena_get_Arr(
+    const double dm, 
+    const char tp, 
+    const unsigned int N, 
+    const unsigned int M);
 
-inline double  UILC_f_target_intensity(const UILC_LamberLED l, const UILC_LED_Arr arr[], const double target_location, const double target_distance );
-
-UILC_LED_Arr * UILC_f_get_arrangement(const unsigned double dm, const char tp, const unsigned int N, const unsigend int M);
 void UILC_f_Free_LED_Arr(UILC_LED_Arr * arr);
 
-// For CA CASE 
+// For CA CASE -------------------------------------------------------
 
 double func_g_for_integral (double t, void *p);
 double func_f (double x, double t, double height);
@@ -77,5 +115,11 @@ double integration_g(const double x, const double wide, const double height,cons
 double func_If(const double x, const double height,const double dx, const gsl_vector * a, const int Dim);
 int set_Matrix_f( gsl_matrix * f, double dx, const int Dim);
 int set_Vector_g( gsl_vector * v, double dx, const int Dim);
-int set_Vector_Cab(gsl_vector * Cab, const_gsl_vector * C, const int Dim);
+int set_Vector_Cab(gsl_vector * Cab, const gsl_vector * C, const int Dim);
 int get_Intensity_Distribution( gsl_vector * intense,  gsl_vector * a, const double height, const double width,const double dx, const int Dim);
+//--------------------------------------------------------------------
+
+
+
+//
+
