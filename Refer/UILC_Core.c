@@ -17,6 +17,15 @@ Ivan Morena's paper, Simulated Annealing Algorithm and other methods.
 - fparams: function parameters
 
 
+This library provide the 
+
+i) Morena's Analytic Solution
+ii) Siemulated Annealing Solution
+iii) Genetic Algorithm Solution
+iV) Morena-Hyeon Solution
+
+For Linear and Rectangle Grid Array
+
 */
 
 #include "UILC.h"
@@ -298,22 +307,6 @@ double UILC_f_Morena_getdm_SquareGrid( // return the dm for Square Grid
 }
 
 
-// Return the optimized arrangement of the linear and Rectangle region as the vector or the marix
-// Given led parameters and the number of the LED, shape.
-UILC_LED_Arr * UILC_f_Morena_OptiArrange(
-    const UILC_LamberLED l,
-    const unsigned int led_n,
-    const unsigned int N,
-    const unsigned int M)
-{
-
-}
-
-// Return the optimized arrangement of the given linear and rectangle region with the # of the LED
-// Givem led parameters and the width, area of the region, shape.
-
-
-
 // LED optimization arrays parts end-----------------------------------------------------------------------------------------
 
 inline double UILC_f_SingleLED_intensity(
@@ -343,7 +336,7 @@ inline double  UILC_f_target_intensity(
     {
         for(int j=0 ; j < M; j++)
         {
-             y += UILC_f_SingleLED_intensity(l, arr[i].location, arr[i].height, target_location, target_distance);
+             y += UILC_f_SingleLED_intensity(l, arr.coor[i], arr[i].height, target_location, target_distance);
         }
     }
     return (y);
@@ -351,7 +344,7 @@ inline double  UILC_f_target_intensity(
 // 상기 함수 수정 필요
 
 
-double UILC_f_get_Arr_coor_value(
+int UILC_f_get_Arr_coor_value(
     const UILC_LED_Arr * arr, 
     const unsigned int N, 
     const unsigned int M, 
@@ -419,4 +412,11 @@ void UILC_f_Free_LED_Arr(UILC_LED_Arr *arr){
     gsl_vector_free(arr->coor);
 }
 */
+
+// Return the optimized arrangement of the linear and Rectangle region as the vector or the marix
+// Given led parameters and the number of the LED, shape.
+
+
+// Return the optimized arrangement of the given linear and rectangle region with the # of the LED
+// Givem led parameters and the width, area of the region, shape.
 

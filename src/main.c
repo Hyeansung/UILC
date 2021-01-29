@@ -37,7 +37,7 @@ int main(void)
     {
         printf("Discrete step:");
         scanf("%d",&i);
-
+        
         
         
     }
