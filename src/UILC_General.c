@@ -40,7 +40,8 @@ inline double UILC_f_get_intensity_Poly_target(
     UILC_Poly_LED ledmodel,
     gsl_vector * led,
     gsl_vector * target
-){
+)
+{
     double vec[3] = {
         fabs(gsl_vector_get(led,0)-gsl_vector_get(target,0)),
         fabs(gsl_vector_get(led,1)-gsl_vector_get(target,1)),
@@ -51,7 +52,7 @@ inline double UILC_f_get_intensity_Poly_target(
     return (UILC_f_get_intensity_Poly(ledmodel,theta) )/gsl_pow_2(r);
 }
 
-//=>LED array function
+//=>LED array function-------------------------------------------
 UILC_LED_Arr UILC_f_Arr_alloc(
     const unsigned int N, 
     const unsigned int M
@@ -69,27 +70,26 @@ int UILC_f_Arr_free(
     return(0);
 }
 
-gsl_vector * UILC_f_get_ArrCoordinate(
+gsl_vector UILC_f_get_ArrCoordinate(
     UILC_LED_Arr arr,
     const unsigned int i,
     const unsigned int j
 )
 {
-    gsl_vector *v = gsl_vector_calloc(3);
-    int index =;
-    gsl_vector_set(v,0, gsl_vector_get(arr.coor,index));
-    gsl_vector_set(v,1, gsl_vector_get(arr.coor,index+1));
-    gsl_vector_set(v,2, gsl_vector_get(arr.coor,index+2));
-
-    return v;
+    int index =3*((i-1)*arr.M+j-1);
+    gsl_vector_view vec = gsl_vector_subvector(arr.coor,index,3);
+    return(vec.vector);
 }
+
 int UILC_f_set_ArrCoordinate(
     UILC_LED_Arr arr,
     const unsigned int i,
     const unsigned int j,
     const gsl_vector * value
-){
-    int index =;
+)
+{
+
+    int index =3*((i-1)*arr.M+j-1);
     gsl_vector_set(arr.coor,index, gsl_vector_get(value,0));
     gsl_vector_set(arr.coor,index+1, gsl_vector_get(value,1));
     gsl_vector_set(arr.coor,index+2, gsl_vector_get(value,2));
@@ -99,38 +99,95 @@ int UILC_f_set_ArrCoordinate(
 
 int UILC_f_set_AllArrCoordinate(
     UILC_LED_Arr arr,
-    double * (*fill)(unsigned int, unsigned int)
+    gsl_vector_view (*fill)(unsigned int, unsigned int)
 ) // Be aware of the 'fill' function form.
 {
     int index=0;
-    double * data =NULL;
-
+    gsl_vector_view vec= {NULL_VECTOR};
     for(int i=0; i< arr.N; i++ )
     {
         for(int j=0; j < arr.M; j++)
         {
-            index=;
-            data = fill(i,j)
-            if(data == NULL){ return 1;}
+            index =3*((i-1)*arr.M+j-1);
+            vec = fill(i,j)
+            if(data == NULL){ return(1);}
 
-            gsl_vector_set(arr.coor,index, *(data+0));
-            gsl_vector_set(arr.coor,index+1, *(data+1));
-            gsl_vector_set(arr.coor,index+2, *(data+2));
+            gsl_vector_set(arr.coor,index, *(vec.vector.data));
+            gsl_vector_set(arr.coor,index+1, *(vec.vectordata+1));
+            gsl_vector_set(arr.coor,index+2, *(vec.vectordata+2));
         }
     }
-    return 0;
+    return(0);
 }
 double UILC_f_get_intensity_arr_Lamber_target(
     UILC_LED_Arr arr,
     UILC_Lamber_LED led,
     gsl_vector * target
-);
+)
+{
+    double y =0;
+    gsl_vector_view vec = {NULL_VECTOR};
+    for(int i=0;i< arr.N, i++)
+    {
+        for(int j=0; j< arr.M, j++)
+        {
+            index =3*((i-1)*arr.M+j-1);
+            vec = gsl_vector_subvector(arr.coor,index,3);
+            y += UILC_f_get_intensity_Lamber_target(led,&vec.vector, target);
+        }
+    }
+    gsl_vector_free(&vec.vector);
+    return(y);
+}
+
 double UILC_f_get_intensity_arr_Poly_target(
     UILC_LED_Arr arr,
     UILC_Poly_LED led,
     gsl_vector * target
-);
+)
+{
+    double y =0;
+    gsl_vector_view vec = {NULL_VECTOR};
+    for(int i=0;i< arr.N, i++)
+    {
+        for(int j=0; j< arr.M, j++)
+        {
+            index =3*((i-1)*arr.M+j-1);
+            vec = gsl_vector_subvector(arr.coor,index,3);
+            y += UILC_f_get_intensity_Poly_target(led,&vec.vector, target);
+        }
+    }
+    gsl_vector_free(&vec.vector);
+    return(y);
+}
 
-double UILC_f_get_arr_target_Area(
-    UILC_LED_Arr arr
-);
+double * UILC_f_get_arr_target_Area(
+    UILC_LED_Arr arr,
+    const int selector
+)
+{
+    double h=0.0;
+    double w=0.0;
+    double a=0.0;
+    double dm=fabs(gsl_vector_get(arr.coor,0)-gsl_vector_get(arr.coor,3));
+    switch(selector)
+    {
+        case BC: // Set the edge LED location as the boundary edge
+        w = fabs(gsl_vector_get(arr.coor,0)-gsl_vector_get(arr.coor,arr.M-1)); 
+        h = fabs(gsl_vector_get(arr.coor,1)-gsl_vector_get(arr.coor,3*arr.M*(arr.N-1)+1)); 
+        break;
+        case HDM: // add edge square which side is 1/2 dm
+        w= fabs(gsl_vector_get(arr.coor,0)-gsl_vector_get(arr.coor,arr.M-1))+dm; 
+        h = fabs(gsl_vector_get(arr.coor,1)-gsl_vector_get(arr.coor,3*arr.M*(arr.N-1)+1))+dm; 
+        break;
+        case FDM: // add edge square which side is dm
+        w= fabs(gsl_vector_get(arr.coor,0)-gsl_vector_get(arr.coor,arr.M-1))+2*dm; 
+        h = fabs(gsl_vector_get(arr.coor,1)-gsl_vector_get(arr.coor,3*arr.M*(arr.N-1)+1))+2*dm; 
+    }
+    a= h*w;
+    if(arr.N==1) // Linear case
+    { 
+        a=w;
+    }
+    return(a);
+}

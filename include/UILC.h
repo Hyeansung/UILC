@@ -53,6 +53,10 @@ For Linear and Rectangle Grid Array
 #define Lamber 1
 #define Poly 2
 
+#define BC 1
+#define HDM 2
+#define FDM 3
+
 #define ROO_BISECTION 1
 #define ROO_FALSEPOS 2
 #define ROO_BRENT 3
@@ -109,13 +113,13 @@ inline double UILC_f_get_intensity_Poly(
 
 inline double UILC_f_get_intensity_Lamber_target(
     UILC_Lamber_LED ledmodel,
-    gsl_vector led,
-    gsl_vector target
+    gsl_vector * led,
+    gsl_vector * target
 );
 inline double UILC_f_get_intensity_Poly_target(
     UILC_Poly_LED ledmodel,
-    gsl_vector led,
-    gsl_vector target
+    gsl_vector * led,
+    gsl_vector * target
 );
 //=>LED array function
 UILC_LED_Arr UILC_f_Arr_alloc(
@@ -141,7 +145,7 @@ int UILC_f_set_ArrCoordinate(
 
 int UILC_f_set_AllArrCoordinate(
     UILC_LED_Arr arr,
-    gsl_vector * (*fill)(unsigned int, unsigned int)
+    gsl_vector_view (*fill)(unsigned int, unsigned int)
 ); // Be aware of the 'fill' function form.
 
 double UILC_f_get_intensity_arr_Lamber_target(
@@ -155,8 +159,9 @@ double UILC_f_get_intensity_arr_Poly_target(
     gsl_vector target
 );
 
-double UILC_f_get_arr_target_Area(
-    UILC_LED_Arr arr
+double * UILC_f_get_arr_target_Area(
+    UILC_LED_Arr arr,
+    const int selector
 );
 
 // "UILC_Morena.c"----------------------------------------------------------
@@ -176,7 +181,8 @@ double UILC_f_Morena_getdm_Linear(
     const unsigned int itetnum, 
     const unsigned int min_selector,
     const unsigned int roo_selector,
-    const double precison);
+    const double precison
+);
 
 double UILC_f_Morena_getdm_SquareGrid( // return the dm for Square Grid
     const UILC_LamberLED l, 
@@ -186,13 +192,22 @@ double UILC_f_Morena_getdm_SquareGrid( // return the dm for Square Grid
     const unsigned int itetnum, 
     const unsigned int min_selector,
     const unsigned int roo_selector,
-    const double precison);
+    const double precison
+);
 
-UILC_LED_Arr  UILC_f_Morena_get_Arr(
+UILC_LED_Arr UILC_f_Morena_get_Arr(
     const double dm, 
     const char tp, //Linear, Square selctor
     const unsigned int N, 
-    const unsigned int M);
+    const unsigned int M
+);
+
+double UILC_f_Morena_get_Morena_Boundary(
+    UILC_LED_Arr arr,
+    const int selector,
+    const double md1,
+    const double md2,
+);
 // "UILC_Hyeon.c"----------------------------------------------------------
 /*
 UILC_LED_Arr UILC_f_Hyeon_get_Arr(
