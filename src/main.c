@@ -1,12 +1,11 @@
 #include "UILC.h"
 #include <stdio.h>
-#include <float.h>
 
 
 
 int main(void)
 {
-    UILC_LamberLED led = {0.0,1};
+    UILC_Lamber_LED led = {0.0,1};
     double Width = 0.0;
     double D = 0.0;
     unsigned int init_led = 1;
@@ -30,8 +29,11 @@ int main(void)
     iter = iter <0 ? 1000 : iter;
 
 
-    int dm = UILC_f_Morena_getdm_Linear();
+    double dm = UILC_f_Morena_getdm_Linear(led,2,1,2,iter,min_selector,roo_selector,0.000001);
 
+    print("Distance: %lf \n",dm);
+
+    /*
     int i=0;
     while(i>=0)
     {
@@ -41,7 +43,7 @@ int main(void)
         
         
     }
-
+    */
 
 
 }

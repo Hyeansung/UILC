@@ -31,6 +31,7 @@ For Linear and Rectangle Grid Array
 
 #include <errno.h>
 #include <math.h>
+#include <float.h>
 
 //GSL Library
 #include <gsl/gsl_roots.h>
@@ -45,6 +46,7 @@ For Linear and Rectangle Grid Array
 #include<gsl/gsl_vector.h>
 #include<gsl/gsl_linalg.h>
 #include<gsl/gsl_blas.h>
+#include <gsl/gsl_deriv.h>
 
 
 #define Linear 'L' 
@@ -151,17 +153,39 @@ int UILC_f_set_AllArrCoordinate(
 double UILC_f_get_intensity_arr_Lamber_target(
     UILC_LED_Arr arr,
     UILC_Lamber_LED led,
-    gsl_vector target
+    gsl_vector * target
 );
+
+
 double UILC_f_get_intensity_arr_Poly_target(
     UILC_LED_Arr arr,
     UILC_Poly_LED led,
-    gsl_vector target
+    gsl_vector * target
 );
 
-double * UILC_f_get_arr_target_Area(
+double  UILC_f_get_arr_target_Area(
     UILC_LED_Arr arr,
     const int selector
+);
+
+double UILC_f_find_derivative_Lamber(
+    const double df_dx,
+    const int axis,
+    const double initialpoint, 
+    const double endpoint,
+    const double step,
+    UILC_LED_Arr arr,
+    UILC_Lamber_LED led
+);
+
+double UILC_f_find_derivative_Poly(
+    const double df_dx,
+    const int axis,
+    const double initialpoint, 
+    const double endpoint,
+    const double step,
+    UILC_LED_Arr arr,
+    UILC_Poly_LED led
 );
 
 // "UILC_Morena.c"----------------------------------------------------------
@@ -176,7 +200,7 @@ double UILC_f_Morena_SquareGrid(
 );
 
 double UILC_f_Morena_getdm_Linear(
-    const UILC_LamberLED l, 
+    const UILC_Lamber_LED l, 
     const int led_n, 
     const unsigned int itetnum, 
     const unsigned int min_selector,
@@ -185,7 +209,7 @@ double UILC_f_Morena_getdm_Linear(
 );
 
 double UILC_f_Morena_getdm_SquareGrid( // return the dm for Square Grid
-    const UILC_LamberLED l, 
+    const UILC_Lamber_LED l, 
     const unsigned int led_n, 
     const unsigned int N, 
     const unsigned int M, 
@@ -197,7 +221,6 @@ double UILC_f_Morena_getdm_SquareGrid( // return the dm for Square Grid
 
 UILC_LED_Arr UILC_f_Morena_get_Arr(
     const double dm, 
-    const char tp, //Linear, Square selctor
     const unsigned int N, 
     const unsigned int M
 );
@@ -206,7 +229,7 @@ double UILC_f_Morena_get_Morena_Boundary(
     UILC_LED_Arr arr,
     const int selector,
     const double md1,
-    const double md2,
+    const double md2
 );
 // "UILC_Hyeon.c"----------------------------------------------------------
 /*

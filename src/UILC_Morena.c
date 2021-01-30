@@ -1,3 +1,5 @@
+#include "../include/UILC.h"
+
 double UILC_f_Morena_Linear(
     const double x, 
     void* p
@@ -159,6 +161,7 @@ double UILC_f_Morena_getdm_SquareGrid( // return the dm for Square Grid
             case 1: T = gsl_min_fminimizer_brent; break;
             case 2: T = gsl_min_fminimizer_quad_golden; break;
         }
+
         gsl_min_fminimizer * s = gsl_min_fminimizer_alloc (T);
         gsl_min_fminimizer_set(s,&F,dm,l_x_lower,l_x_upper);
 
@@ -172,8 +175,7 @@ double UILC_f_Morena_getdm_SquareGrid( // return the dm for Square Grid
             status = gsl_root_test_interval(l_x_lower, l_x_upper, 0, precison );
         }
         while(status == GSL_CONTINUE && iter < max_iter);
-        
-        gsl_min_fminnizmizer_free(s);
+        gsl_min_fminimizer_free(s);
     } 
     else if(GSL_IS_EVEN(N) && GSL_IS_EVEN(M))
     { // both even: Root
@@ -198,7 +200,6 @@ double UILC_f_Morena_getdm_SquareGrid( // return the dm for Square Grid
             status = gsl_root_test_interval(l_x_lower, l_x_upper, 0, precison );
         }
         while(status == GSL_CONTINUE && iter < max_iter);
-
         gsl_root_fsolver_free(s);
 
     }
@@ -226,8 +227,7 @@ double UILC_f_Morena_getdm_SquareGrid( // return the dm for Square Grid
             status = gsl_root_test_interval(l_x_lower, l_x_upper, 0, precison );
         }
         while(status == GSL_CONTINUE && iter < max_iter);
-        
-        gsl_min_fminnizmizer_free(s);
+        gsl_min_fminimizer_free(s);
 
 
         /*
@@ -262,7 +262,6 @@ double UILC_f_Morena_getdm_SquareGrid( // return the dm for Square Grid
                 status = gsl_root_test_interval(l_x_lower, l_x_upper, 0, precison );
             }
             while(status == GSL_CONTINUE && iter < max_iter);
-
             gsl_root_fsolver_free(s);
 
         }
@@ -273,20 +272,35 @@ double UILC_f_Morena_getdm_SquareGrid( // return the dm for Square Grid
 
 UILC_LED_Arr UILC_f_Morena_get_Arr(
     const double dm, 
-    const char tp, //Linear, Square selctor
     const unsigned int N, 
     const unsigned int M
 )
 {
+    gsl_vector * arr = gsl_vector_calloc( N * M *3);
 
+    for(int i=0; i<N; i++)
+    {
+        for(int j=0; j<M ; j++)
+        {
+            
+            gsl_vector_set(arr,i*3 + j+0, (i-(N-1)/2)*dm) ;
+            gsl_vector_set(arr,i*3 + j+1, (j-(M-1)/2)*dm) ;
+            gsl_vector_set(arr,i*3 + j+2, 0.0) ;
+        }
+    }
+
+    UILC_LED_Arr Arr = {N, M, arr};
+    return(Arr);
 }
 
-double UILC_f_Morena_get_Morena_Boundary(
+
+inline double UILC_f_Morena_get_Morena_Boundary(
     UILC_LED_Arr arr,
     const int selector,
     const double md1,
-    const double md2,
+    const double md2
 )
 {
-    
+    return(UILC_f_get_arr_target_Area(arr,selector)-md1*md2);
 }
+

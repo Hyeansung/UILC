@@ -1,4 +1,4 @@
-#include "UILC.h"
+#include "../include/UILC.h"
 
 inline double UILC_f_get_intensity_Lamber(
     UILC_Lamber_LED led, 
@@ -14,7 +14,7 @@ inline double UILC_f_get_intensity_Poly(
 )
 {
     double y=0.0;
-    for(int i =0, i < led.n+1;i++)
+    for(int i =0; i < led.n+1;i++)
     {
         y+= *(led.param+i)*pow(theta,i);
     }
@@ -29,11 +29,11 @@ inline double UILC_f_get_intensity_Lamber_target(
     double vec[3] = {
         fabs(gsl_vector_get(led,0)-gsl_vector_get(target,0)),
         fabs(gsl_vector_get(led,1)-gsl_vector_get(target,1)),
-        fabs(gsl_vector_get(led,2)-gsl_vector_get(target,2))}
-    double r=gsl_hypot3(vec[0], vec[1], vec[2]);
-    double pr = gsl_hypo2(vec[0],vec[1]);
-    double theta = atan2(pr,vecp[2]);
-    return (UILC_f_get_intensity_Lambe(ledmodel,theta) )/gsl_pow_2(r);
+        fabs(gsl_vector_get(led,2)-gsl_vector_get(target,2))};
+    double r= gsl_hypot3(vec[0], vec[1], vec[2]);
+    double pr = gsl_hypot(vec[0],vec[1]);
+    double theta = atan2(pr,vec[2]);
+    return (UILC_f_get_intensity_Lamber(ledmodel,theta) )/gsl_pow_2(r);
 }
 
 inline double UILC_f_get_intensity_Poly_target(
@@ -45,10 +45,10 @@ inline double UILC_f_get_intensity_Poly_target(
     double vec[3] = {
         fabs(gsl_vector_get(led,0)-gsl_vector_get(target,0)),
         fabs(gsl_vector_get(led,1)-gsl_vector_get(target,1)),
-        fabs(gsl_vector_get(led,2)-gsl_vector_get(target,2))}
-    double r=gsl_hypot3(vec[0], vec[1], vec[2]);
-    double pr = gsl_hypo2(vec[0],vec[1]);
-    double theta = atan2(pr,vecp[2]);
+        fabs(gsl_vector_get(led,2)-gsl_vector_get(target,2))};
+    double r= gsl_hypot3(vec[0], vec[1], vec[2]);
+    double pr = gsl_hypot(vec[0],vec[1]);
+    double theta = atan2(pr,vec[2]);
     return (UILC_f_get_intensity_Poly(ledmodel,theta) )/gsl_pow_2(r);
 }
 
@@ -103,18 +103,18 @@ int UILC_f_set_AllArrCoordinate(
 ) // Be aware of the 'fill' function form.
 {
     int index=0;
-    gsl_vector_view vec= {NULL_VECTOR};
+    gsl_vector_view vec;
     for(int i=0; i< arr.N; i++ )
     {
         for(int j=0; j < arr.M; j++)
         {
             index =3*((i-1)*arr.M+j-1);
-            vec = fill(i,j)
-            if(data == NULL){ return(1);}
+            vec = fill(i,j);
+            if(vec.vector.data == NULL){ return(1);}
 
             gsl_vector_set(arr.coor,index, *(vec.vector.data));
-            gsl_vector_set(arr.coor,index+1, *(vec.vectordata+1));
-            gsl_vector_set(arr.coor,index+2, *(vec.vectordata+2));
+            gsl_vector_set(arr.coor,index+1, *(vec.vector.data+1));
+            gsl_vector_set(arr.coor,index+2, *(vec.vector.data+2));
         }
     }
     return(0);
@@ -126,10 +126,11 @@ double UILC_f_get_intensity_arr_Lamber_target(
 )
 {
     double y =0;
-    gsl_vector_view vec = {NULL_VECTOR};
-    for(int i=0;i< arr.N, i++)
+    gsl_vector_view vec;
+    int index =0;
+    for(int i=0;i< arr.N; i++)
     {
-        for(int j=0; j< arr.M, j++)
+        for(int j=0; j< arr.M; j++)
         {
             index =3*((i-1)*arr.M+j-1);
             vec = gsl_vector_subvector(arr.coor,index,3);
@@ -147,10 +148,11 @@ double UILC_f_get_intensity_arr_Poly_target(
 )
 {
     double y =0;
-    gsl_vector_view vec = {NULL_VECTOR};
-    for(int i=0;i< arr.N, i++)
+    gsl_vector_view vec;
+    int index =0;
+    for(int i=0;i< arr.N; i++)
     {
-        for(int j=0; j< arr.M, j++)
+        for(int j=0; j< arr.M; j++)
         {
             index =3*((i-1)*arr.M+j-1);
             vec = gsl_vector_subvector(arr.coor,index,3);
@@ -161,7 +163,7 @@ double UILC_f_get_intensity_arr_Poly_target(
     return(y);
 }
 
-double * UILC_f_get_arr_target_Area(
+double  UILC_f_get_arr_target_Area(
     UILC_LED_Arr arr,
     const int selector
 )
@@ -190,4 +192,141 @@ double * UILC_f_get_arr_target_Area(
         a=w;
     }
     return(a);
+}
+
+double UILC_f_find_derivative_Lamber(
+    const double df_dx,
+    const int axis,
+    const double initialpoint, 
+    const double endpoint,
+    const double step,
+    UILC_LED_Arr arr,
+    UILC_Lamber_LED led
+)
+{
+    int N = (int)(endpoint - initialpoint) / step;
+    double h = step/2;
+    double fm1 = 0.0;
+    double fp1 = 0.0;
+    double fmh = 0.0;
+    double fph = 0.0;
+    double x =0.0;
+    double d=0.0;
+    gsl_vector * vec = gsl_vector_calloc(3);
+
+    if(axis == 0)
+    {// get x axis case
+        for(int i=0; i<N;i++) 
+        {   
+            x = initialpoint+i*step;
+            gsl_vector_set(vec,0, x-h);
+            fm1 = UILC_f_get_intensity_arr_Lamber_target(arr,led,vec);
+            gsl_vector_set(vec,0, x+h);
+            fp1 = UILC_f_get_intensity_arr_Lamber_target(arr,led,vec);
+            gsl_vector_set(vec,0, x-h/2);
+            fmh = UILC_f_get_intensity_arr_Lamber_target(arr,led,vec);
+            gsl_vector_set(vec,0, x+h/2);
+            fph = UILC_f_get_intensity_arr_Lamber_target(arr,led,vec);
+        
+            double result = (4.0/3.0) *(fph - fmh) - (1.0 / 3.0) *(0.5 * (fp1 - fm1));
+
+            if(fabs(result - df_dx) < DBL_EPSILON){
+                d = result;
+                break;
+            }
+        }
+
+    }
+    else if(axis == 1)
+    {// get y axis case
+        for(int i=0; i<N;i++) 
+        {   
+            x = initialpoint+i*step;
+            gsl_vector_set(vec,1, x-h);
+            fm1 = UILC_f_get_intensity_arr_Lamber_target(arr,led,vec);
+            gsl_vector_set(vec,1, x+h);
+            fp1 = UILC_f_get_intensity_arr_Lamber_target(arr,led,vec);
+            gsl_vector_set(vec,1, x-h/2);
+            fmh = UILC_f_get_intensity_arr_Lamber_target(arr,led,vec);
+            gsl_vector_set(vec,1, x+h/2);
+            fph = UILC_f_get_intensity_arr_Lamber_target(arr,led,vec);
+        
+            double result = (4.0/3.0) *(fph - fmh) - (1.0 / 3.0) *(0.5 * (fp1 - fm1));
+
+            if(fabs(result - df_dx) < DBL_EPSILON){
+                d = result;
+                break;
+            }
+        }
+    }
+
+    return(d);
+}
+double UILC_f_find_derivative_Poly(
+    const double df_dx,
+    const int axis,
+    const double initialpoint, 
+    const double endpoint,
+    const double step,
+    UILC_LED_Arr arr,
+    UILC_Poly_LED led
+)
+{
+    int N = (int)(endpoint - initialpoint) / step;
+    double h = step/2;
+    double fm1 = 0.0;
+    double fp1 = 0.0;
+    double fmh = 0.0;
+    double fph = 0.0;
+    double x =0.0;
+    double d=0.0;
+    gsl_vector * vec = gsl_vector_calloc(3);
+
+    if(axis == 0)
+    {// get x axis case
+        for(int i=0; i<N;i++) 
+        {   
+            x = initialpoint+i*step;
+            gsl_vector_set(vec,0, x-h);
+            fm1 = UILC_f_get_intensity_arr_Poly_target(arr,led,vec);
+            gsl_vector_set(vec,0, x+h);
+            fp1 = UILC_f_get_intensity_arr_Poly_target(arr,led,vec);
+            gsl_vector_set(vec,0, x-h/2);
+            fmh = UILC_f_get_intensity_arr_Poly_target(arr,led,vec);
+            gsl_vector_set(vec,0, x+h/2);
+            fph = UILC_f_get_intensity_arr_Poly_target(arr,led,vec);
+        
+            double result = (4.0/3.0) *(fph - fmh) - (1.0 / 3.0) *(0.5 * (fp1 - fm1));
+
+            if(fabs(result - df_dx) < DBL_EPSILON){
+                d = result;
+                break;
+            }
+        }
+
+    }
+    else if(axis == 1)
+    {// get y axis case
+        for(int i=0; i<N;i++) 
+        {   
+            x = initialpoint+i*step;
+            gsl_vector_set(vec,1, x-h);
+            fm1 = UILC_f_get_intensity_arr_Poly_target(arr,led,vec);
+            gsl_vector_set(vec,1, x+h);
+            fp1 = UILC_f_get_intensity_arr_Poly_target(arr,led,vec);
+            gsl_vector_set(vec,1, x-h/2);
+            fmh = UILC_f_get_intensity_arr_Poly_target(arr,led,vec);
+            gsl_vector_set(vec,1, x+h/2);
+            fph = UILC_f_get_intensity_arr_Poly_target(arr,led,vec);
+        
+            double result = (4.0/3.0) *(fph - fmh) - (1.0 / 3.0) *(0.5 * (fp1 - fm1));
+
+            if(fabs(result - df_dx) < DBL_EPSILON){
+                d = result;
+                break;
+            }
+        }
+    }
+
+    return(d);
 }
