@@ -32,6 +32,7 @@ For Linear and Rectangle Grid Array
 #include <errno.h>
 #include <math.h>
 #include <float.h>
+#include <stdio.h>
 
 //GSL Library
 #include <gsl/gsl_roots.h>
@@ -44,8 +45,6 @@ For Linear and Rectangle Grid Array
 #include<gsl/gsl_integration.h>
 #include<gsl/gsl_matrix.h>
 #include<gsl/gsl_vector.h>
-#include<gsl/gsl_linalg.h>
-#include<gsl/gsl_blas.h>
 #include <gsl/gsl_deriv.h>
 
 
@@ -70,7 +69,7 @@ For Linear and Rectangle Grid Array
 //LED struct---------------------------------------------------------------
 typedef struct{
     double intensity;
-    unsigned int m;
+    double m;
 } UILC_Lamber_LED;
 
 typedef struct{
@@ -79,12 +78,12 @@ typedef struct{
 } UILC_Poly_LED;
 //Morena Analytic solution function params----------------------------------
 typedef struct{
-    unsigned int m;
+    double m;
     unsigned int n;
 } UILC_fparams_linear; 
 
 typedef struct{
-    unsigned int m;
+    double m;
     unsigned int N;
     unsigned int M;
 } UILC_fparams_Rectangle;
@@ -150,14 +149,14 @@ int UILC_f_set_AllArrCoordinate(
     gsl_vector_view (*fill)(unsigned int, unsigned int)
 ); // Be aware of the 'fill' function form.
 
-double UILC_f_get_intensity_arr_Lamber_target(
+inline double UILC_f_get_intensity_arr_Lamber_target(
     UILC_LED_Arr arr,
     UILC_Lamber_LED led,
     gsl_vector * target
 );
 
 
-double UILC_f_get_intensity_arr_Poly_target(
+inline double UILC_f_get_intensity_arr_Poly_target(
     UILC_LED_Arr arr,
     UILC_Poly_LED led,
     gsl_vector * target
@@ -168,7 +167,7 @@ double  UILC_f_get_arr_target_Area(
     const int selector
 );
 
-double UILC_f_find_derivative_Lamber(
+inline double UILC_f_find_derivative_Lamber(
     const double df_dx,
     const int axis,
     const double initialpoint, 
@@ -178,7 +177,7 @@ double UILC_f_find_derivative_Lamber(
     UILC_Lamber_LED led
 );
 
-double UILC_f_find_derivative_Poly(
+inline double UILC_f_find_derivative_Poly(
     const double df_dx,
     const int axis,
     const double initialpoint, 

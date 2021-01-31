@@ -119,7 +119,7 @@ int UILC_f_set_AllArrCoordinate(
     }
     return(0);
 }
-double UILC_f_get_intensity_arr_Lamber_target(
+inline double UILC_f_get_intensity_arr_Lamber_target(
     UILC_LED_Arr arr,
     UILC_Lamber_LED led,
     gsl_vector * target
@@ -141,7 +141,7 @@ double UILC_f_get_intensity_arr_Lamber_target(
     return(y);
 }
 
-double UILC_f_get_intensity_arr_Poly_target(
+inline double UILC_f_get_intensity_arr_Poly_target(
     UILC_LED_Arr arr,
     UILC_Poly_LED led,
     gsl_vector * target
@@ -194,7 +194,7 @@ double  UILC_f_get_arr_target_Area(
     return(a);
 }
 
-double UILC_f_find_derivative_Lamber(
+inline double UILC_f_find_derivative_Lamber(
     const double df_dx,
     const int axis,
     const double initialpoint, 
@@ -262,7 +262,7 @@ double UILC_f_find_derivative_Lamber(
 
     return(d);
 }
-double UILC_f_find_derivative_Poly(
+inline double UILC_f_find_derivative_Poly(
     const double df_dx,
     const int axis,
     const double initialpoint, 

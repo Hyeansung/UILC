@@ -11,7 +11,7 @@ double UILC_f_Morena_Linear(
     double y =0.00;
     for(int i=1; i<n+1;i++)
     {
-        y += (1-(m+3)*gsl_pow_2(((n+1-2*(i))*(x/2)))) / pow(( 1+ gsl_pow_2((x/2)*(n+1-2*(i)))),(m/2+3));
+        y += (1-(m+3)*gsl_pow_2( (n+1-2*(i))*(x/2) ) ) / pow(( 1+ gsl_pow_2((x/2)*(n+1-2*(i)))),(m/2+3));
     }
     return y;
 }
@@ -46,7 +46,7 @@ double UILC_f_Morena_getdm_Linear(
 )
 {
     double dm =0.0;
-    double l_x_lower = 0.0;
+    double l_x_lower = -0.0000001;
     double l_x_upper = 1.0;
     int status =0;
     int iter =0, max_iter = itetnum;
@@ -57,7 +57,8 @@ double UILC_f_Morena_getdm_Linear(
 
     if(GSL_IS_ODD(led_n))
     { // led_n = odd case we need to find the local minimum case
-
+        
+        double l_x_upper = 9.9;
         /*
         There are 3 algorithms are provided in GSL library for find minimization of the function.
         - gsl_min_fminimizer_goldensection : The simplest method of bracketing the minimum of a function. It is the slowest algorithm provided by the library, with linear convergence.
@@ -67,12 +68,25 @@ double UILC_f_Morena_getdm_Linear(
         const gsl_min_fminimizer_type * T = gsl_min_fminimizer_goldensection;
         switch(min_selector)
         {
-            case 0: break;
-            case 1: T = gsl_min_fminimizer_brent; break;
-            case 2: T = gsl_min_fminimizer_quad_golden; break;
+            case 1: break;
+            case 2: T = gsl_min_fminimizer_brent; break;
+            case 3: T = gsl_min_fminimizer_quad_golden; break;
         }
         gsl_min_fminimizer * s = gsl_min_fminimizer_alloc (T);
         gsl_min_fminimizer_set(s,&F,dm,l_x_lower,l_x_upper);
+
+
+         printf ("using %s method\n",
+          gsl_min_fminimizer_name (s));
+
+         printf ("%5s [%9s, %9s] %9s %10s %9s\n",
+          "iter", "lower", "upper", "min",
+          "err", "err(est)");
+
+         printf ("%5d [%.7f, %.7f] %.7f %+.7f %.7f\n",
+          iter, l_x_lower, l_x_upper,
+          dm, dm - 0.7, l_x_upper - l_x_lower);
+
 
         do
         {
@@ -81,7 +95,18 @@ double UILC_f_Morena_getdm_Linear(
             dm = gsl_min_fminimizer_x_minimum (s);
             l_x_lower = gsl_root_fsolver_x_lower (s);
             l_x_upper = gsl_root_fsolver_x_upper (s);
-            status = gsl_root_test_interval(l_x_lower, l_x_upper, 0, precison );
+            status = gsl_root_test_interval(l_x_lower, l_x_upper, 0.0001, precison );
+        
+            if (status == GSL_SUCCESS)
+            {
+                printf ("Converged:\n");
+            }
+                
+
+            printf ("%5d [%.7f, %.7f] "
+              "%.7f %+.7f %.7f\n",
+              iter, l_x_lower, l_x_upper,
+              dm, dm - 0.7, l_x_upper - l_x_lower);
         }
         while(status == GSL_CONTINUE && iter < max_iter);
         
@@ -99,9 +124,9 @@ double UILC_f_Morena_getdm_Linear(
 
         switch(roo_selector)
         {
-            case 0: break;
-            case 1: T = gsl_root_fsolver_falsepos; break;
-            case 2: T = gsl_root_fsolver_brent; break;
+            case 1: break;
+            case 2: T = gsl_root_fsolver_falsepos; break;
+            case 3: T = gsl_root_fsolver_brent; break;
         }
         gsl_root_fsolver * s = gsl_root_fsolver_alloc(T);
         gsl_root_fsolver_set(s,&F,l_x_lower,l_x_upper);

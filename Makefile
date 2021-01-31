@@ -6,5 +6,5 @@ execute: main.o UILC_CA.o UILC_Core.o
 main.o: min.o
 
 
-# gcc -o ./object/UILC_Morena.o -c -Wall ./src/UILC_Morena.c
-# gcc -o ./object/UILC_General.o -c -Wall ./src/UILC_General.c
+# gcc -o ./object/UILC_Morena.o -c -Wall ./src/UILC_Morena.c -lgsl -lm
+# gcc -o ./object/UILC_General.o -c -Wall ./src/UILC_General.c -lgsl -lm
