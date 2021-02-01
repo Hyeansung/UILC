@@ -45,8 +45,8 @@ double UILC_f_Morena_getdm_Linear(
     const double precison
 )
 {
-    double dm =0.0;
-    double l_x_lower = -0.0000001;
+    double dm =0.3;
+    double l_x_lower = 0.0;
     double l_x_upper = 1.0;
     int status =0;
     int iter =0, max_iter = itetnum;
@@ -57,8 +57,7 @@ double UILC_f_Morena_getdm_Linear(
 
     if(GSL_IS_ODD(led_n))
     { // led_n = odd case we need to find the local minimum case
-        
-        double l_x_upper = 9.9;
+  
         /*
         There are 3 algorithms are provided in GSL library for find minimization of the function.
         - gsl_min_fminimizer_goldensection : The simplest method of bracketing the minimum of a function. It is the slowest algorithm provided by the library, with linear convergence.
@@ -73,9 +72,12 @@ double UILC_f_Morena_getdm_Linear(
             case 3: T = gsl_min_fminimizer_quad_golden; break;
         }
         gsl_min_fminimizer * s = gsl_min_fminimizer_alloc (T);
-        gsl_min_fminimizer_set(s,&F,dm,l_x_lower,l_x_upper);
+        double f_min = UILC_f_Morena_Linear(dm,&l_params);
+        double f_lower = UILC_f_Morena_Linear(l_x_lower,&l_params);
+        double f_upper = UILC_f_Morena_Linear(l_x_upper,&l_params);
+        gsl_min_fminimizer_set_with_values(s,&F,dm,f_min,l_x_lower,f_lower,l_x_upper,f_upper);
 
-
+        /*
          printf ("using %s method\n",
           gsl_min_fminimizer_name (s));
 
@@ -86,7 +88,7 @@ double UILC_f_Morena_getdm_Linear(
          printf ("%5d [%.7f, %.7f] %.7f %+.7f %.7f\n",
           iter, l_x_lower, l_x_upper,
           dm, dm - 0.7, l_x_upper - l_x_lower);
-
+        */
 
         do
         {
@@ -102,11 +104,12 @@ double UILC_f_Morena_getdm_Linear(
                 printf ("Converged:\n");
             }
                 
-
+            /*
             printf ("%5d [%.7f, %.7f] "
               "%.7f %+.7f %.7f\n",
               iter, l_x_lower, l_x_upper,
               dm, dm - 0.7, l_x_upper - l_x_lower);
+            */
         }
         while(status == GSL_CONTINUE && iter < max_iter);
         
@@ -308,9 +311,9 @@ UILC_LED_Arr UILC_f_Morena_get_Arr(
         for(int j=0; j<M ; j++)
         {
             
-            gsl_vector_set(arr,i*3 + j+0, (i-(N-1)/2)*dm) ;
-            gsl_vector_set(arr,i*3 + j+1, (j-(M-1)/2)*dm) ;
-            gsl_vector_set(arr,i*3 + j+2, 0.0) ;
+            gsl_vector_set(arr,i*3 + 3*j+0, (i-(N-1)/2)*dm) ;
+            gsl_vector_set(arr,i*3 + 3*j+1, (j-(M-1)/2)*dm) ;
+            gsl_vector_set(arr,i*3 + 3*j+2, 0.0) ;
         }
     }
 

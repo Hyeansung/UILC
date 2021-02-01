@@ -1,6 +1,6 @@
 #include "../include/UILC.h"
 
-inline double UILC_f_get_intensity_Lamber(
+extern inline double UILC_f_get_intensity_Lamber(
     UILC_Lamber_LED led, 
     const double theta
 )
@@ -8,7 +8,7 @@ inline double UILC_f_get_intensity_Lamber(
     return led.intensity * pow(cos(theta),led.m);
 }
 
-inline double UILC_f_get_intensity_Poly(
+extern inline double UILC_f_get_intensity_Poly(
     UILC_Poly_LED led, 
     const double theta
 )
@@ -20,7 +20,7 @@ inline double UILC_f_get_intensity_Poly(
     }
 }
 
-inline double UILC_f_get_intensity_Lamber_target(
+extern inline double UILC_f_get_intensity_Lamber_target(
     UILC_Lamber_LED ledmodel,
     gsl_vector * led,
     gsl_vector * target
@@ -36,7 +36,7 @@ inline double UILC_f_get_intensity_Lamber_target(
     return (UILC_f_get_intensity_Lamber(ledmodel,theta) )/gsl_pow_2(r);
 }
 
-inline double UILC_f_get_intensity_Poly_target(
+extern inline double UILC_f_get_intensity_Poly_target(
     UILC_Poly_LED ledmodel,
     gsl_vector * led,
     gsl_vector * target
@@ -70,15 +70,19 @@ int UILC_f_Arr_free(
     return(0);
 }
 
-gsl_vector UILC_f_get_ArrCoordinate(
+double * UILC_f_get_ArrCoordinate(
     UILC_LED_Arr arr,
     const unsigned int i,
     const unsigned int j
 )
 {
     int index =3*((i-1)*arr.M+j-1);
+    double d[3] ={0.0,0.0,0.0};
     gsl_vector_view vec = gsl_vector_subvector(arr.coor,index,3);
-    return(vec.vector);
+    d[0] = gsl_vector_get(&(vec.vector),0);
+    d[1] = gsl_vector_get(&(vec.vector),1);
+    d[2] = gsl_vector_get(&(vec.vector),2);
+    return(d);
 }
 
 int UILC_f_set_ArrCoordinate(
@@ -119,7 +123,7 @@ int UILC_f_set_AllArrCoordinate(
     }
     return(0);
 }
-inline double UILC_f_get_intensity_arr_Lamber_target(
+extern inline double UILC_f_get_intensity_arr_Lamber_target(
     UILC_LED_Arr arr,
     UILC_Lamber_LED led,
     gsl_vector * target
@@ -141,7 +145,7 @@ inline double UILC_f_get_intensity_arr_Lamber_target(
     return(y);
 }
 
-inline double UILC_f_get_intensity_arr_Poly_target(
+extern inline double UILC_f_get_intensity_arr_Poly_target(
     UILC_LED_Arr arr,
     UILC_Poly_LED led,
     gsl_vector * target
@@ -194,18 +198,19 @@ double  UILC_f_get_arr_target_Area(
     return(a);
 }
 
-inline double UILC_f_find_derivative_Lamber(
+extern inline double UILC_f_find_derivative_Lamber(
     const double df_dx,
     const int axis,
     const double initialpoint, 
     const double endpoint,
-    const double step,
+    double step,
     UILC_LED_Arr arr,
     UILC_Lamber_LED led
 )
 {
-    int N = (int)(endpoint - initialpoint) / step;
+    int N = (int)fabs(endpoint - initialpoint) / step;
     double h = step/2;
+    step = (endpoint - initialpoint)< 0.0 ? -step: step;
     double fm1 = 0.0;
     double fp1 = 0.0;
     double fmh = 0.0;

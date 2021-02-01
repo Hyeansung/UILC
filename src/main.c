@@ -27,42 +27,50 @@ int main(void)
     scanf("%d",&iter);
     iter = iter <0 ? 1000 : iter;
 
-    // Tempo test code for odd number miniization.
-    while(init_led !=-1)
-    {
-
-        UILC_fparams_linear l_params = {led.m,init_led};
-        double min =UILC_f_Morena_Linear(0.0,&l_params);
-        double itere =0.0;
-        double k = 0;
-        for(int i=0; i< 10000; i++)
-        {   
-            itere = UILC_f_Morena_Linear(0.0+i*0.0001,&l_params);
-            if(min > itere){
-                min = itere;
-                k = 0.0+i*0.0001;
-            }
-
-        }
-
-        printf("    x_low      f(x_low)\n");
-        printf("%le %le\n",k,min );
-
-        printf("Enter the initial Morena led number(as many as possible):");
-        scanf("%d",&init_led);
-    }
-
-
-/*
-    while(init_led !=-1){
-    printf("Get dm \n")
     double dm = UILC_f_Morena_getdm_Linear(led,init_led,iter,min_selector,roo_selector,DBL_EPSILON);
+    printf("%le \n",dm);
 
-    printf("Distance: %lf \n",dm);
-    printf("Enter the initial Morena led number(as many as possible):");
-    scanf("%d",&init_led);
+/*-----------------------------------------------------------------------*/
+    //UILC_LED_Arr arr = UILC_f_Morena_get_Arr(dm,1,init_led);
+    int N = 1;
+    int M = init_led;
+    gsl_vector * arr = gsl_vector_calloc( N * M *3);
+
+    for(int i=0; i<N; i++)
+    {
+        for(int j=0; j<M ; j++)
+        {
+            
+            gsl_vector_set(arr,i*3 + 3*j+0, (i-(N-1)/2)*dm) ;
+            gsl_vector_set(arr,i*3 + 3*j+1, (j-(M-1)/2)*dm) ;
+            gsl_vector_set(arr,i*3 + 3*j+2, 0.0);
+            printf("%d, %d ,%d\n",i*3 + j+0, i*3 + j+1, i*3 + j+2 );
+            printf("x:%le y:%le z:%le\n",(i-(N-1)/2)*dm,(j-(M-1)/2)*dm,0.0 );
+            printf("x:%le y:%le z:%le\n", gsl_vector_get(arr,0),gsl_vector_get(arr,1),gsl_vector_get(arr,2));
+            //printf("x:%le y:%le z:%le\n", gsl_vector_get(arr,i*3 + j+0),gsl_vector_get(arr,i*3 + j+1),gsl_vector_get(arr,i*3 + j+2));
+        }
     }
+
+    for(int i =0; i< 3*M;i++){
+        printf("%d: %le \n", i,gsl_vector_get(arr,i) );
+
+    }
+
     
+/*-----------------------------------------------------------------------*/
+    /*
+    double df_dx_1 = UILC_f_find_derivative_Lamber(1.0,0,gsl_vector_get(vec,0)- dm,0.0,0.00001,arr,led);
+    double df_dy_1 = UILC_f_find_derivative_Lamber(1.0,1,gsl_vector_get(vec,1)+ dm,0.0,0.00001,arr,led);
+    
+    double Morena_Bound = UILC_f_Morena_get_Morena_Boundary(arr,FDM,df_dx_1,df_dy_1);
+    double area = UILC_f_get_arr_target_Area(arr,FDM);
+
+    printf("    dm,     Area,   Morena_boundary \n");
+    printf("%le, %le, %le \n", dm, area, Morena_Bound);
+    */
+
+ 
+ /*  
     int i=0;
     while(i>=0)
     {

@@ -102,22 +102,22 @@ typedef struct{
 //General_functions("UILC_Core.c")------------------------------------------
 
 //=>LED function: The below functions will be called by other function frequently. So they are defined as inline function.
-inline double UILC_f_get_intensity_Lamber(
+extern inline double UILC_f_get_intensity_Lamber(
     UILC_Lamber_LED led, 
     const double theta
 );
 
-inline double UILC_f_get_intensity_Poly(
+extern inline double UILC_f_get_intensity_Poly(
     UILC_Poly_LED led, 
     const double theta
 );
 
-inline double UILC_f_get_intensity_Lamber_target(
+extern inline double UILC_f_get_intensity_Lamber_target(
     UILC_Lamber_LED ledmodel,
     gsl_vector * led,
     gsl_vector * target
 );
-inline double UILC_f_get_intensity_Poly_target(
+extern inline double UILC_f_get_intensity_Poly_target(
     UILC_Poly_LED ledmodel,
     gsl_vector * led,
     gsl_vector * target
@@ -132,7 +132,7 @@ int UILC_f_Arr_free(
     UILC_LED_Arr arr
 );
 
-gsl_vector UILC_f_get_ArrCoordinate(
+double * UILC_f_get_ArrCoordinate(
     UILC_LED_Arr arr,
     const unsigned int i,
     const unsigned int j
@@ -149,14 +149,14 @@ int UILC_f_set_AllArrCoordinate(
     gsl_vector_view (*fill)(unsigned int, unsigned int)
 ); // Be aware of the 'fill' function form.
 
-inline double UILC_f_get_intensity_arr_Lamber_target(
+extern inline double UILC_f_get_intensity_arr_Lamber_target(
     UILC_LED_Arr arr,
     UILC_Lamber_LED led,
     gsl_vector * target
 );
 
 
-inline double UILC_f_get_intensity_arr_Poly_target(
+extern inline double UILC_f_get_intensity_arr_Poly_target(
     UILC_LED_Arr arr,
     UILC_Poly_LED led,
     gsl_vector * target
@@ -167,7 +167,7 @@ double  UILC_f_get_arr_target_Area(
     const int selector
 );
 
-inline double UILC_f_find_derivative_Lamber(
+extern inline double UILC_f_find_derivative_Lamber(
     const double df_dx,
     const int axis,
     const double initialpoint, 
