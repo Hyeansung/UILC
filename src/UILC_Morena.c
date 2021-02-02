@@ -303,17 +303,21 @@ UILC_LED_Arr UILC_f_Morena_get_Arr(
     const unsigned int N, 
     const unsigned int M
 )
-{
+{   
+    double x=0.0;
+    double y=0.0;
     gsl_vector * arr = gsl_vector_calloc( N * M *3);
 
     for(int i=0; i<N; i++)
     {
         for(int j=0; j<M ; j++)
         {
-            
-            gsl_vector_set(arr,i*3 + 3*j+0, (i-(N-1)/2)*dm) ;
-            gsl_vector_set(arr,i*3 + 3*j+1, (j-(M-1)/2)*dm) ;
+            x=((double)i-((double)N-1.0)/2);
+            y=((double)j-((double)M-1.0)/2);
+            gsl_vector_set(arr,i*3 + 3*j+0,x*dm) ;
+            gsl_vector_set(arr,i*3 + 3*j+1,y*dm) ;
             gsl_vector_set(arr,i*3 + 3*j+2, 0.0) ;
+            //printf("%le x dm = %le\n",y,y*dm);
         }
     }
 

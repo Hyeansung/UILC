@@ -132,7 +132,7 @@ int UILC_f_Arr_free(
     UILC_LED_Arr arr
 );
 
-double * UILC_f_get_ArrCoordinate(
+gsl_vector * UILC_f_get_ArrCoordinate(
     UILC_LED_Arr arr,
     const unsigned int i,
     const unsigned int j

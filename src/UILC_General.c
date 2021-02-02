@@ -27,12 +27,12 @@ extern inline double UILC_f_get_intensity_Lamber_target(
 )
 {
     double vec[3] = {
-        fabs(gsl_vector_get(led,0)-gsl_vector_get(target,0)),
-        fabs(gsl_vector_get(led,1)-gsl_vector_get(target,1)),
-        fabs(gsl_vector_get(led,2)-gsl_vector_get(target,2))};
+        gsl_vector_get(led,0)-gsl_vector_get(target,0),
+        gsl_vector_get(led,1)-gsl_vector_get(target,1),
+        gsl_vector_get(led,2)-gsl_vector_get(target,2)};
     double r= gsl_hypot3(vec[0], vec[1], vec[2]);
     double pr = gsl_hypot(vec[0],vec[1]);
-    double theta = atan2(pr,vec[2]);
+    double theta = atan2(pr,fabs(vec[2]));
     return (UILC_f_get_intensity_Lamber(ledmodel,theta) )/gsl_pow_2(r);
 }
 
@@ -70,19 +70,16 @@ int UILC_f_Arr_free(
     return(0);
 }
 
-double * UILC_f_get_ArrCoordinate(
+gsl_vector * UILC_f_get_ArrCoordinate(
     UILC_LED_Arr arr,
     const unsigned int i,
     const unsigned int j
 )
 {
     int index =3*((i-1)*arr.M+j-1);
-    double d[3] ={0.0,0.0,0.0};
     gsl_vector_view vec = gsl_vector_subvector(arr.coor,index,3);
-    d[0] = gsl_vector_get(&(vec.vector),0);
-    d[1] = gsl_vector_get(&(vec.vector),1);
-    d[2] = gsl_vector_get(&(vec.vector),2);
-    return(d);
+
+    return(&vec.vector);
 }
 
 int UILC_f_set_ArrCoordinate(
@@ -129,19 +126,36 @@ extern inline double UILC_f_get_intensity_arr_Lamber_target(
     gsl_vector * target
 )
 {
-    double y =0;
-    gsl_vector_view vec;
+    gsl_vector * vec = gsl_vector_calloc(3);
+    double y =0.0;
     int index =0;
     for(int i=0;i< arr.N; i++)
     {
         for(int j=0; j< arr.M; j++)
         {
-            index =3*((i-1)*arr.M+j-1);
-            vec = gsl_vector_subvector(arr.coor,index,3);
-            y += UILC_f_get_intensity_Lamber_target(led,&vec.vector, target);
+            index =3*((i)*arr.M+j);
+            gsl_vector_set(vec,0,gsl_vector_get(arr.coor,index+0));
+            gsl_vector_set(vec,1,gsl_vector_get(arr.coor,index+1));
+            gsl_vector_set(vec,2,gsl_vector_get(arr.coor,index+2));
+
+            y += UILC_f_get_intensity_Lamber_target(led,vec, target);
+            /*
+            printf("LED: (%le,%le,%le) Target: (%le,%le,%le) y= %le \n",
+                    gsl_vector_get(vec,0),
+                    gsl_vector_get(vec,1),
+                    gsl_vector_get(vec,2),
+                    gsl_vector_get(target,0),
+                    gsl_vector_get(target,1), 
+                    gsl_vector_get(target,2),
+                    y
+                    );
+            */
         }
+        
     }
-    gsl_vector_free(&vec.vector);
+    gsl_vector_free(vec);
+
+    
     return(y);
 }
 
@@ -171,31 +185,37 @@ double  UILC_f_get_arr_target_Area(
     UILC_LED_Arr arr,
     const int selector
 )
-{
-    double h=0.0;
-    double w=0.0;
-    double a=0.0;
-    double dm=fabs(gsl_vector_get(arr.coor,0)-gsl_vector_get(arr.coor,3));
+{ 
+    double h0 = gsl_vector_get(arr.coor,3*arr.N*(arr.M-1)+1);
+    double h1 = gsl_vector_get(arr.coor,1);
+    double h=fabs(h0-h1); 
+    //double h=gsl_vector_get(arr.coor,1); 
+    //double w=fabs(gsl_vector_get(arr.coor,0)-gsl_vector_get(arr.coor,3*(arr.M-1)));
+    double w=fabs(gsl_vector_get(arr.coor,0));
+    double dm=fabs( gsl_vector_get(arr.coor,1)-gsl_vector_get(arr.coor,4) );
+    w = 1.0;
+
+    if(fabs(h -0.0) < DBL_EPSILON){
+        h =1.0;
+    }
+    if(fabs(w -0.0) < DBL_EPSILON){
+        w = 1.0;
+    }
+
+    printf("%d \n h0: %le h1: %le h: %le w: %le dm: %le\n",3*arr.M*(arr.N-1)+1,h0,h1, h , w ,dm);
     switch(selector)
     {
         case BC: // Set the edge LED location as the boundary edge
-        w = fabs(gsl_vector_get(arr.coor,0)-gsl_vector_get(arr.coor,arr.M-1)); 
-        h = fabs(gsl_vector_get(arr.coor,1)-gsl_vector_get(arr.coor,3*arr.M*(arr.N-1)+1)); 
+        return(h*w);
         break;
         case HDM: // add edge square which side is 1/2 dm
-        w= fabs(gsl_vector_get(arr.coor,0)-gsl_vector_get(arr.coor,arr.M-1))+dm; 
-        h = fabs(gsl_vector_get(arr.coor,1)-gsl_vector_get(arr.coor,3*arr.M*(arr.N-1)+1))+dm; 
+        return((h+dm/2)*(w+dm/2));
         break;
         case FDM: // add edge square which side is dm
-        w= fabs(gsl_vector_get(arr.coor,0)-gsl_vector_get(arr.coor,arr.M-1))+2*dm; 
-        h = fabs(gsl_vector_get(arr.coor,1)-gsl_vector_get(arr.coor,3*arr.M*(arr.N-1)+1))+2*dm; 
+        return((h+dm)*(w+dm));
     }
-    a= h*w;
-    if(arr.N==1) // Linear case
-    { 
-        a=w;
-    }
-    return(a);
+
+    
 }
 
 extern inline double UILC_f_find_derivative_Lamber(
