@@ -172,9 +172,10 @@ extern inline double UILC_f_find_derivative_Lamber(
     const int axis,
     const double initialpoint, 
     const double endpoint,
-    const double step,
+    double step,
     UILC_LED_Arr arr,
-    UILC_Lamber_LED led
+    UILC_Lamber_LED led,
+    const double height
 );
 
 inline double UILC_f_find_derivative_Poly(

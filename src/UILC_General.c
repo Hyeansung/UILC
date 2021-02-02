@@ -225,7 +225,8 @@ extern inline double UILC_f_find_derivative_Lamber(
     const double endpoint,
     double step,
     UILC_LED_Arr arr,
-    UILC_Lamber_LED led
+    UILC_Lamber_LED led,
+    const double height
 )
 {
     int N = (int)fabs(endpoint - initialpoint) / step;
@@ -238,7 +239,7 @@ extern inline double UILC_f_find_derivative_Lamber(
     double x =0.0;
     double d=0.0;
     gsl_vector * vec = gsl_vector_calloc(3);
-
+    gsl_vector_set(vec,2, height);
     if(axis == 0)
     {// get x axis case
         for(int i=0; i<N;i++) 
@@ -255,8 +256,8 @@ extern inline double UILC_f_find_derivative_Lamber(
         
             double result = (4.0/3.0) *(fph - fmh) - (1.0 / 3.0) *(0.5 * (fp1 - fm1));
 
-            if(fabs(result - df_dx) < DBL_EPSILON){
-                d = result;
+            if(result >df_dx){
+                d = x;
                 break;
             }
         }
@@ -266,7 +267,9 @@ extern inline double UILC_f_find_derivative_Lamber(
     {// get y axis case
         for(int i=0; i<N;i++) 
         {   
+            
             x = initialpoint+i*step;
+            printf("%d, %le \n",i+1,x);
             gsl_vector_set(vec,1, x-h);
             fm1 = UILC_f_get_intensity_arr_Lamber_target(arr,led,vec);
             gsl_vector_set(vec,1, x+h);
@@ -275,11 +278,11 @@ extern inline double UILC_f_find_derivative_Lamber(
             fmh = UILC_f_get_intensity_arr_Lamber_target(arr,led,vec);
             gsl_vector_set(vec,1, x+h/2);
             fph = UILC_f_get_intensity_arr_Lamber_target(arr,led,vec);
-        
+            printf("fm1: %le\nfp1: %le\nfmh: %le\nfph: %le\n", fm1,fp1,fmh,fph);
             double result = (4.0/3.0) *(fph - fmh) - (1.0 / 3.0) *(0.5 * (fp1 - fm1));
-
-            if(fabs(result - df_dx) < DBL_EPSILON){
-                d = result;
+            printf("result: %le\n",result);
+            if(result >df_dx){
+                d = x;
                 break;
             }
         }

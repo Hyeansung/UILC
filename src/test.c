@@ -1,6 +1,6 @@
 #include "../include/UILC.h"
 
-
+#define CLEARINBUFFER while(getchar() != '\n');
 
 int main(void)
 {
@@ -30,7 +30,7 @@ int main(void)
 */
     led.intensity =1000000;
     led.m =80.7;
-    init_led = 50;
+    init_led = 4;
     roo_selector =1;
     min_selector =1;
     iter =1000;
@@ -55,12 +55,13 @@ int main(void)
         printf("Intensity: %le\n\n",UILC_f_get_intensity_arr_Lamber_target(arr,led,ve) );
         
         double area = UILC_f_get_arr_target_Area(arr,HDM);
-
-        //printf("    dm,     Area,   Morena_boundary \n");
-        //printf("%le, %le, \n", dm, area);
+        double morena = fabs( 2*UILC_f_find_derivative_Lamber(1.0, 1, gsl_vector_get(arr.coor,1)-1,0.0, 0.00001,arr,led,0.03) );
+        printf("    dm,     Area,   Morena_boundary, percentage \n");
+        printf("%le, %le, %le, %le\n", dm, area, 2.720578e+00, 100*(area-morena)/area);
         
         printf("set led number:");
-        scanf("%d",&init_led);
+        CLEARINBUFFER
+        scanf("%d ",&init_led);
     }
 /*
     gsl_vector* vec = gsl_vector_calloc(3); // location of each led
