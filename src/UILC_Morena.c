@@ -149,7 +149,7 @@ double UILC_f_Morena_getdm_Linear(
         
     }
 
-    return dm;
+    return(dm);
 }
 
 double UILC_f_Morena_getdm_SquareGrid( // return the dm for Square Grid
