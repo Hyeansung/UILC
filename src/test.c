@@ -38,6 +38,7 @@ int main(void)
     
 
     while(init_led>0){
+        
         double dm = UILC_f_Morena_getdm_Linear(led,init_led,iter,min_selector,roo_selector,DBL_EPSILON);
         printf("\n\ndm: %le ",dm);
 /*-----------------------------------------------------------------------*/
@@ -55,13 +56,25 @@ int main(void)
         printf("Intensity: %le\n\n",UILC_f_get_intensity_arr_Lamber_target(arr,led,ve) );
         
         double area = UILC_f_get_arr_target_Area(arr,HDM);
-        double morena = fabs( 2*UILC_f_find_derivative_Lamber(1.0, 1, gsl_vector_get(arr.coor,1)-1,0.0, 0.00001,arr,led,0.03) );
-        printf("    dm,     Area,   Morena_boundary, percentage \n");
-        printf("%le, %le, %le, %le\n", dm, area, 2.720578e+00, 100*(area-morena)/area);
         
+        
+        /*
+        while(x>-3.0){
+            scanf("%le", &x);
+            printf("%le \n", UILC_df_get_intensity_arr_Lamber_target(x,&l_param));
+        }
+        */
+        double x = UILC_f_find_derivative_Lamber(1.0, 1, 0.000000001, DBL_EPSILON,arr,led,1,0.3);
+        double morena = fabs( 2*x );
+        UILC_df_Lamber_param l_param = {1.0,0.3,0.000001,1,arr,led};
+        printf("x: %le df: %le \n",x, UILC_df_get_intensity_arr_Lamber_target(x,&l_param));
+        printf("    dm,     Area,   Morena_boundary, percentage \n");
+        printf("%le, %le, %le, %le\n", dm, area, morena, 100*(area-morena)/area);
+        printf("----------------------------------------\n");
         printf("set led number:");
         CLEARINBUFFER
-        scanf("%d ",&init_led);
+        scanf("%d",&init_led);
+        
     }
 /*
     gsl_vector* vec = gsl_vector_calloc(3); // location of each led

@@ -66,6 +66,9 @@ For Linear and Rectangle Grid Array
 #define MIN_BRENT 2
 #define MIN_QUADGOLDEN 3
 
+
+
+
 //LED struct---------------------------------------------------------------
 typedef struct{
     double intensity;
@@ -88,12 +91,41 @@ typedef struct{
     unsigned int M;
 } UILC_fparams_Rectangle;
 
+
+
+
+
 //General LED Array---------------------------------------------------------
 typedef struct{
     int N;
     int M;
     gsl_vector * coor;
 }UILC_LED_Arr;
+
+
+
+
+//-------------------------------------
+typedef struct{
+    UILC_LED_Arr arr;
+    UILC_Lamber_LED led;
+    double height;
+    int axis;
+
+} UILC_fdf_Lamber_param;
+
+typedef struct{
+    double df_dx;
+    double height;
+    double h;
+    int axis;
+    UILC_LED_Arr arr;
+    UILC_Lamber_LED led;
+    
+
+} UILC_df_Lamber_param;
+
+//-------------------------------------
 
 //==========================================================================
 //Functions
@@ -167,14 +199,18 @@ double  UILC_f_get_arr_target_Area(
     const int selector
 );
 
+/*---------------------------------------------------------*/
+extern inline double UILC_fdf_get_intensity_arr_Lamber_target(double x, void * param);
+extern inline double UILC_df_get_intensity_arr_Lamber_target(double x, void * param);
+/*---------------------------------------------------------*/
 extern inline double UILC_f_find_derivative_Lamber(
     const double df_dx,
     const int axis,
-    const double initialpoint, 
-    const double endpoint,
-    double step,
+    const double instep,
+    const double precison,
     UILC_LED_Arr arr,
     UILC_Lamber_LED led,
+    const unsigned int root_selector,
     const double height
 );
 
