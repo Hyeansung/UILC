@@ -92,11 +92,12 @@ typedef struct{
 } UILC_fparams_Rectangle;
 
 
-
-
-
 //General LED Array---------------------------------------------------------
 typedef struct{
+    double dm;
+    double height;
+    double d;
+    double Max_I;
     int N;
     int M;
     gsl_vector * coor;
@@ -115,14 +116,11 @@ typedef struct{
 } UILC_fdf_Lamber_param;
 
 typedef struct{
-    double df_dx;
     double height;
     double h;
     int axis;
     UILC_LED_Arr arr;
     UILC_Lamber_LED led;
-    
-
 } UILC_df_Lamber_param;
 
 //-------------------------------------
@@ -155,9 +153,16 @@ extern inline double UILC_f_get_intensity_Poly_target(
     gsl_vector * target
 );
 //=>LED array function
-UILC_LED_Arr UILC_f_Arr_alloc(
+UILC_LED_Arr UILC_f_Arr_calloc(
+    const double dm,
+    const double height,
     const unsigned int N, 
     const unsigned int M
+);
+
+int UILC_f_Arr_Lamber_set_max(
+    UILC_LED_Arr * arr,
+    UILC_Lamber_LED led
 );
 
 int UILC_f_Arr_free(
@@ -187,6 +192,11 @@ extern inline double UILC_f_get_intensity_arr_Lamber_target(
     gsl_vector * target
 );
 
+extern inline double UILC_f_get_Normal_intensity_arr_Lamber_target(
+    UILC_LED_Arr arr,
+    UILC_Lamber_LED led,
+    gsl_vector * target
+);
 
 extern inline double UILC_f_get_intensity_arr_Poly_target(
     UILC_LED_Arr arr,
@@ -199,19 +209,44 @@ double  UILC_f_get_arr_target_Area(
     const int selector
 );
 
+int UILC_f_print_arr(
+    UILC_LED_Arr arr
+);
+
 /*---------------------------------------------------------*/
-extern inline double UILC_fdf_get_intensity_arr_Lamber_target(double x, void * param);
-extern inline double UILC_df_get_intensity_arr_Lamber_target(double x, void * param);
-/*---------------------------------------------------------*/
-extern inline double UILC_f_find_derivative_Lamber(
-    const double df_dx,
-    const int axis,
-    const double instep,
-    const double precison,
+extern inline double UILC_df_get_intensity_arr_Lamber_target(
+    const double x, 
+    const double h, 
     UILC_LED_Arr arr,
     UILC_Lamber_LED led,
-    const unsigned int root_selector,
-    const double height
+    const int axis
+);
+
+extern inline double UILC_df_get_Normal_intensity_arr_Lamber_target(
+    const double x, 
+    const double h, 
+    UILC_LED_Arr arr,
+    UILC_Lamber_LED led,
+    const int axis
+);
+/*---------------------------------------------------------*/
+extern inline double UILC_f_find_derivative_Lamber(
+    const int axis,
+    UILC_LED_Arr arr,
+    UILC_Lamber_LED led
+);
+
+extern inline double UILC_f_find_Normal_derivative_Lamber(
+    const int axis,
+    UILC_LED_Arr arr,
+    UILC_Lamber_LED led
+);
+
+extern inline double UILC_f_find_Normal_value_Lamber(
+    const int axis,
+    UILC_LED_Arr arr,
+    UILC_Lamber_LED led,
+    const double td
 );
 
 inline double UILC_f_find_derivative_Poly(
@@ -257,6 +292,7 @@ double UILC_f_Morena_getdm_SquareGrid( // return the dm for Square Grid
 
 UILC_LED_Arr UILC_f_Morena_get_Arr(
     const double dm, 
+    double height,
     const unsigned int N, 
     const unsigned int M
 );

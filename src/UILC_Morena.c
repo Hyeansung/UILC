@@ -45,7 +45,7 @@ double UILC_f_Morena_getdm_Linear(
     const double precison
 )
 {
-    double dm =0.3;
+    double dm =0.5;
     double l_x_lower = 0.0;
     double l_x_upper = 1.0;
     int status =0;
@@ -54,6 +54,32 @@ double UILC_f_Morena_getdm_Linear(
     gsl_function F;
     F.function = &UILC_f_Morena_Linear;
     F.params = &l_params;
+
+    if(fmod(l.m , 2.0)<DBL_EPSILON){ dm = 0.8;}
+    else{dm = 0.6;}
+/*
+    if(l.m <3.0)
+    {
+        dm =0.8;
+    }
+    else if (l.m <4.0)
+    {
+        dm = 0.6;
+    }
+    else if(l.m < 6.0)
+    {
+        dm = 0.5;
+    }
+    else if(l.m < 12)
+    {
+        dm = 0.4;
+    }
+    else
+    {
+        dm = 0.2;
+    }
+*/
+
 
     if(GSL_IS_ODD(led_n))
     { // led_n = odd case we need to find the local minimum case
@@ -142,6 +168,10 @@ double UILC_f_Morena_getdm_Linear(
             l_x_lower = gsl_root_fsolver_x_lower (s);
             l_x_upper = gsl_root_fsolver_x_upper (s);
             status = gsl_root_test_interval(l_x_lower, l_x_upper, 0, precison );
+            if (status == GSL_SUCCESS)
+            {
+                printf ("Converged:\n");
+            }
         }
         while(status == GSL_CONTINUE && iter < max_iter);
 
@@ -295,17 +325,20 @@ double UILC_f_Morena_getdm_SquareGrid( // return the dm for Square Grid
         }
     }
 
-    return dm;
+    return(dm);
 }
 
 UILC_LED_Arr UILC_f_Morena_get_Arr(
     const double dm, 
+    double height,
     const unsigned int N, 
     const unsigned int M
 )
 {   
     double x=0.0;
     double y=0.0;
+    double d = dm*height;
+    //printf(" ARR DM: %le \n", d);
     gsl_vector * arr = gsl_vector_calloc( N * M *3);
 
     for(int i=0; i<N; i++)
@@ -314,14 +347,13 @@ UILC_LED_Arr UILC_f_Morena_get_Arr(
         {
             x=((double)i-((double)N-1.0)/2);
             y=((double)j-((double)M-1.0)/2);
-            gsl_vector_set(arr,i*3 + 3*j+0,x*dm) ;
-            gsl_vector_set(arr,i*3 + 3*j+1,y*dm) ;
+            gsl_vector_set(arr,i*3 + 3*j+0,x*d) ;
+            gsl_vector_set(arr,i*3 + 3*j+1,y*d) ;
             gsl_vector_set(arr,i*3 + 3*j+2, 0.0) ;
             //printf("%le x dm = %le\n",y,y*dm);
         }
     }
-
-    UILC_LED_Arr Arr = {N, M, arr};
+    UILC_LED_Arr Arr = {dm,height, d,0.0, N, M, arr};
     return(Arr);
 }
 
