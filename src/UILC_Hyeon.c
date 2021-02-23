@@ -18,9 +18,6 @@ Transformation method
 
 inline double hyperg_2F1_aR(double a, double b, double c, double x)
 {
-
+    
 }
-
-
-1.0939790288090513083575272074666505603058911596320336858307124921
  
