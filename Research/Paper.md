@@ -88,6 +88,19 @@ Our system satisfies all pre-condition of the Kaykobad's Theorem. In addition, o
 
 [Fig: m= 80, n= 20, n =50 comparsion]
 
+Using the Kaykobad's Theorem, we can find the maximum dimension of the system $n_{limit}$. The solution $\vec{\sigma_C}>>0$ for $n\leq n_{limit}$, $\exist \vec{\sigma_C}_k \leq 0$ for $n>n_{limit}$
+
+
+
+It is equivalent with Non-negative Least Square(NNLS) problem. *Active set method* is commonly used. 
+
+
+
+[Comparsion with n < $n_{limit}$ case, n > $n_{limit}$ with inverse matrix and Active set method comparsion, solution and the $F$ multiplication]
+
+### 2-2. 2-dimension Rectangular array
+
+### 2-3. 2-dimension Cicular array
 ## 3. Experiment 
 
 ## 4. Result and discussion
