@@ -83,7 +83,10 @@ $$\vec{I}_j > \sum_{k=1, k \neq j}^n \frac{{\bf{F}}_{jk}}{{\bf{F}}_{kk}} \vec{I}
 
 then, matrix ${\bf{F}}$ is invertible and solution $\vec{\sigma_C} = {\bf{F}}^{-1}\vec{I}$ is postive solution whose elements are all positive. 
 
-Our system satisfies all pre-condition of the Kaykobad's Theorem. In addition, our matrix ${\bf{F}}$ has unit diagonal entry and $\vec{I} = (I_0, I_0, \dots , I_0)^T$. With that, the condtion state that the diagonal dominant of ${\bf{F}}$.
+Our system satisfies all pre-condition of the Kaykobad's Theorem. In addition, our matrix ${\bf{F}}$ has unit diagonal entry and $\vec{I} = (I_0, I_0, \dots , I_0)^T$. With that, the condtion state the diagonal dominant of ${\bf{F}}$. 
+
+
+[Fig: m= 80, n= 20, n =50 comparsion]
 
 ## 3. Experiment 
 
