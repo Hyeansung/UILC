@@ -83,20 +83,45 @@ $$\vec{I}_j > \sum_{k=1, k \neq j}^n \frac{{\bf{F}}_{jk}}{{\bf{F}}_{kk}} \vec{I}
 
 then, matrix ${\bf{F}}$ is invertible and solution $\vec{\sigma_C} = {\bf{F}}^{-1}\vec{I}$ is postive solution whose elements are all positive. 
 
-Our system satisfies all pre-condition of the Kaykobad's Theorem. In addition, our matrix ${\bf{F}}$ has unit diagonal entry and $\vec{I} = (I_0, I_0, \dots , I_0)^T$. With that, the condtion state the diagonal dominant of ${\bf{F}}$. 
+Our system satisfies all pre-condition of the Kaykobad's Theorem. In addition, our matrix ${\bf{F}}$ has unit diagonal entry and $\vec{I} = (I_0, I_0, \dots , I_0)^T$. With that, the condtion state the diagonal dominant property of ${\bf{F}}$. Define the number $n_{max}$ as the maximum number of sample points which have positive solution. The solution $\vec{\sigma_C}>>0$ for $n\leq n_{max}$, and $\exist \vec{\sigma_C}_k \leq 0$ for $n>n_{max}$.
+
+The equation (diagonal dominant) can be rewritten as
+
+$$ I_0 > \sum_{k=1, k \neq j}^n \frac{f(|j-k|\frac{W}{n})}{f(0)} I_0$$
+
+Let's define normalized funtion $f_n(x)$.
+
+$$f_n(x) = \frac{f(x)}{f(0)}$$
+
+$max(f_n) = f_n(0) = 1$ and with a relationship of Reimann sum and integral we can show next,
+
+$$\int_{a}^{a+W} f_n(x) \, dx \geq \sum_{k=1, k \neq j}^n f_n(x_k) (\frac{W}{n})$$
+
+$a \in [-\frac{W}{2}, \frac{W}{2}]$. 
+
+**[Picture?]**
 
 
-[Fig: m= 80, n= 20, n =50 comparsion]
 
-Using the Kaykobad's Theorem, we can find the maximum dimension of the system $n_{limit}$. The solution $\vec{\sigma_C}>>0$ for $n\leq n_{limit}$, $\exist \vec{\sigma_C}_k \leq 0$ for $n>n_{limit}$
+For specific $m$, the maximum case of the summation is the row that the diagonal element exist on middle of it. If matrix satiesfies the equation in maximum case, it holds other rows automatically. Such case is $a \approx - \frac{W}{2}$. Therefore, we can determine the $n_{max}$ as next.
 
-
-
-It is equivalent with Non-negative Least Square(NNLS) problem. *Active set method* is commonly used. 
+$$ n_{max} = \lfloor {W}{/\int_{-\frac{W}{2}}^{\frac{W}{2}} f_n(x) \, dx} \rfloor = \lfloor 1/ _2F_1(\frac{1}{2}, \frac{m+2}{2}; \frac{3}{2}; - (\frac{W}{2H})^2) \rfloor$$
 
 
+When Lambertian model number $m$ increases, the distribution function $f(x,t)$ become more similar to Kronecter delta function. If $m$ decreases, the non-diagonal term become larger than before, so that the matrix easily loose diagonal dominant charateristic at smaller $n$.
 
-[Comparsion with n < $n_{limit}$ case, n > $n_{limit}$ with inverse matrix and Active set method comparsion, solution and the $F$ multiplication]
+**[Fig: m= 80, n= 20, n =50 comparsion]**
+
+The problem arise, when $m$ is small. Such case, we cannot find enough sample points for $\sigma_C(x)$. Even though, $n$ overcome the $n_{max}$, we can find meaningful samples, if $n - n_{max}$ is small. However, the greater value of gap $n - n_{max}$, the solution becomes less meaningful.
+
+**[m=3, $n$= $n_{limt}$, $n$>$n_{limt}$, $n$>>$n_{limt}$,] comparsion**
+
+Therefore, when $m$ is too small that we cannot get meaningful number of samples, we have to use another way for solving the system. It is equivalent with Non-Negative Least Square(NNLS) problem that finding a positive solution of the linear system. *Active set method* is commonly used to solve NNLS problem. It is not only possible to find the exact solution with positive constraint, but also providing an approximation solution with cutting some precison by limited iteration numbers.
+
+**[Comparsion with n < $n_{max}$ case, n > $n_{max}$ with inverse matrix and Active set method comparsion, solution and the $F$ multiplication]**
+
+After we get the $\sigma_C$ solution, we need to transform it to discrete LED arrangement $\sigma$. We can assume the value of the $\sigma_C$ as the density of the LED. However, get a formal array solution we need some standard 
+
 
 ### 2-2. 2-dimension Rectangular array
 
