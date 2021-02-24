@@ -37,13 +37,53 @@ $$I(t) := \sum_{i=1}^N I(x_i,t)= I_0 \sum_{i=1}^N \frac{H^m}{(H^2 + (x_i - t)^2)
 
 for $N$ LEDs. To reduce the complexity of the calculation we consider all LEDs have same optical properties in radiation power and distribution.
 
-Now, assume that the LEDs are located on closed region which length is $W$ and we only consider the intensity in that region on above line. In other word, it means $x, t \in [-\frac{W}{2}, \frac{W}{2}]$. Using Kronecker delta function, we can represent the specific arrangement of the LEDs as array function $\sigma$ and define the function $f(x,t)$ as next.
+Now, assume that the LEDs are located in the closed region which length is $W$. We will only consider the intensity in this region on the above line. In other word, it means $x, t \in [-\frac{W}{2}, \frac{W}{2}]$ region. Using Kronecker delta function, we can represent the specific arrangement $\{ x_i \}_{i=1}^N$ of the LEDs as array function $\sigma$ and define the function $f(x,t)$ as next.
 
-$$\sigma(x) := \sum_{i=1}^N \delta(x-x_i)$$
-$$f(x,t) := \frac{H^m}{(H^2 + (x - t)^2)^(\frac{m}{2} +1)}$$
+$$\sigma(x, \{ x_i \}_{i=1}^N) := \sum_{i=1}^N \delta(x-x_i)$$
+$$f(x,t) := \frac{H^m}{(H^2 + (x - t)^2)^{(\frac{m}{2} +1)}}$$
 
-Our goal is finding a specific arrangement $\{x_i \}_{i=1}^N$. However, the number of the LED $N$ is not important. We will concentrate on tendency of the $\sigma(x)$ by $x$ values. Intuitively, we can infer some properties of the function $\sigma(x)$. For example, it will show narrow distance between two consecutive $x_n$, $x_{n+1}$ near boundary than they are located near center, because, with a constant distance case; **Morena**, it showed smaller intensity value near the boundary. 
+With these definition, we can rewrite the intensity at $t$ point.
 
+$$I(t) = f(x,t) \sigma(x, \{ x_i \}_{i=1}^N)$$
+
+Our goal is finding an optimized arrangement $\{x_i \}_{i=1}^N$ which determines the array function $\sigma(x, \{ x_i \}_{i=1}^N)$.  However, the number of the LED $N$ is not important. We will concentrate on tendency of the $\sigma(x, \{ x_i \}_{i=1}^N)$ by $x$ values for general modification. Thus, we assume the continous function $\sigma_C(x)$ defined on $[-\frac{W}{2}, \frac{W}{2}]$. We can get $\sigma(x, \{ x_i \}_{i=1}^N)$ with discretizing $\sigma_C(x)$. 
+
+$$D_N(\sigma_C(x)) = \sigma(x, \{ x_i \}_{i=1}^N)$$
+
+Intuitively, we can infer some properties of the function $\sigma_C(x)$. For example, it will show a narrow distance between two consecutive elements $x_n$, $x_{n+1}$ near boundary than they are located near center point, because, when they have same distance, those array showed smaller intensity value near the boundary than central value. 
+
+$$\sigma_C(x) \geq 0 , \forall x \in [-\frac{W}{2}, \frac{W}{2}]$$
+$$\sigma_C(x) = \sigma_C(-x)$$
+$$\sigma_C(x_1) \leq \sigma_C(x_2), |x_1| < |x_2|, x_1,x_2 \in [-\frac{W}{2}, \frac{W}{2}]$$
+
+
+The initial step is determine the function $\sigma_C (x)$. We cannot construct it directly. Therefore, we can approximate using interpolation method with sample point set $\{x_j \}_{j=1}^n , \{ t_k \}_{k=1}^n$. These point set is discretizing the region $[-\frac{W}{2}, \frac{W}{2}]$ with $n$ number of interval points. 
+
+$$x_j = (j-\frac{1}{2})\frac{W}{n}-\frac{W}{2}, t_k = (k-\frac{1}{2})\frac{W}{n}-\frac{W}{2}$$
+
+For sample point $t_k$, the intsnsity $I_k = I(t_k)$ is
+
+$$I(t_k) = \sum_{j=1}^n f(x_j, t_k) \sigma_C(x_j)$$
+
+Therefore, we can construct linear system
+
+$${\bf{F}} \vec{\sigma_C} = \vec{I}$$
+
+,where $\bf{F} \in M_{n\times n}(\mathbb{R})$ and $\vec{\sigma_C}, \vec{I} \in \mathbb{R}^n$. Each elements are defined as
+
+$${\bf{F}}_{jk} := f(x_j, t_k)$$
+$$\vec{\sigma_C}_j := \sigma_C(x_j)$$
+$$\vec{I}_k := I(t_k)$$
+
+By the definition of the $f(x_j, t_k) = f(|j-k|\frac{W}{n})$, the matrix $\bf{F}$ is bisymmetric matrix and it is invertible **Cite_proof_invertible**. However, we want get positive solution which all elements of $\sigma_C$ are positive by the first property of $\sigma_C$ with constant vector $\vec{I} = (I_0, I_0, \dots , I_0)^T$. 
+
+M. Kaykobad studied the condition of the positive solution for specific linear system, whose diagnal elements of ${\bf{F}}$ and elemenst of $\vec{I}$ are larger than zero and ${\bf{F}}$ is non-negative matrix. If for all $j,k = 1, 2, \dots n$,
+
+$$\vec{I}_j > \sum_{k=1, k \neq j}^n \frac{{\bf{F}}_{jk}}{{\bf{F}}_{kk}} \vec{I}_k $$
+
+then, matrix ${\bf{F}}$ is invertible and solution $\vec{\sigma_C} = {\bf{F}}^{-1}\vec{I}$ is postive solution whose elements are all positive. 
+
+Our system satisfies all pre-condition of the Kaykobad's Theorem. In addition, our matrix ${\bf{F}}$ has unit diagonal entry and $\vec{I} = (I_0, I_0, \dots , I_0)^T$. With that, the condtion state that the diagonal dominant of ${\bf{F}}$.
 
 ## 3. Experiment 
 
