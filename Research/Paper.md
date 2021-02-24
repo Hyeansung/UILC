@@ -16,7 +16,7 @@ Kim, Hyeaonsung
 
 Common LED intensity model is a Lambertian intensity distribution model[^Lamber] with an inverse square law.
 
-$$I(r, \theta) = \frac{I_0}{r^2}\cos^m(\theta)$$
+$$I'(r, \theta) = \frac{I_0}{r^2}\cos^m(\theta)$$
 
 Where $I_0$ is an intensity that LED emits perpendicular to its surface, $\theta$ is an angle between perpendicular vector and direction vector to point from center of the LED, and $m$ is a number, determing the optical property. 
 
@@ -33,9 +33,14 @@ $$\theta_{i} = \arctan(\frac{|x_i - t|}{H})$$
 
 With a Lambertian distribution model, the intensity of the j-th sample point $I$ is
 
-$$I(t) := \sum_{i=1}^N I(x_i,t)= I_0 \sum_{i=1}^N \frac{H^m}{(H^2 + (x_i - t)^2)^(\frac{m}{2} +1)}$$
+$$I'(t) := \sum_{i=1}^N I'(x_i,t)= I_0 \sum_{i=1}^N \frac{H^m}{(H^2 + (x_i - t)^2)^(\frac{m}{2} +1)}$$
 
 for $N$ LEDs. To reduce the complexity of the calculation we consider all LEDs have same optical properties in radiation power and distribution.
+
+The $I_0$ is differ as the power consumption condition of the LED and does not matter in this case so, we wikll define the $I(t)$ as next. 
+
+$$I(t) =\sum_{i=1}^N I'(x_i,t)/I_0=  \sum_{i=1}^N \frac{H^m}{(H^2 + (x_i - t)^2)^(\frac{m}{2} +1)}$$
+
 
 Now, assume that the LEDs are located in the closed region which length is $W$. We will only consider the intensity in this region on the above line. In other word, it means $x, t \in [-\frac{W}{2}, \frac{W}{2}]$ region. Using Kronecker delta function, we can represent the specific arrangement $\{ x_i \}_{i=1}^N$ of the LEDs as array function $\sigma$ and define the function $f(x,t)$ as next.
 
@@ -67,23 +72,23 @@ $$I(t_k) = \sum_{j=1}^n f(x_j, t_k) \sigma_C(x_j)$$
 
 Therefore, we can construct linear system
 
-$${\bf{F}} \vec{\sigma_C} = \vec{I}$$
+$${\bf{F}} {\sigma_C} = {I}$$
 
-,where $\bf{F} \in M_{n\times n}(\mathbb{R})$ and $\vec{\sigma_C}, \vec{I} \in \mathbb{R}^n$. Each elements are defined as
+,where $\bf{F} \in M_{n\times n}(\mathbb{R})$ and ${\sigma_C}, {I} \in \mathbb{R}^n$. Each elements are defined as
 
 $${\bf{F}}_{jk} := f(x_j, t_k)$$
-$$\vec{\sigma_C}_j := \sigma_C(x_j)$$
-$$\vec{I}_k := I(t_k)$$
+$${\sigma_C}_j := \sigma_C(x_j)$$
+$${I}_k := I(t_k)$$
 
-By the definition of the $f(x_j, t_k) = f(|j-k|\frac{W}{n})$, the matrix $\bf{F}$ is bisymmetric matrix and it is invertible **Cite_proof_invertible**. However, we want get positive solution which all elements of $\sigma_C$ are positive by the first property of $\sigma_C$ with constant vector $\vec{I} = (I_0, I_0, \dots , I_0)^T$. 
+By the definition of the $f(x_j, t_k) = f(|j-k|\frac{W}{n})$, the matrix $\bf{F}$ is bisymmetric matrix and it is invertible **Cite_proof_invertible**. However, we want get positive solution which all elements of $\sigma_C$ are positive by the first property of $\sigma_C$ with constant vector ${I} = (I_1, I_2, \dots , I_n)^T, I_{i+1} = I_i \forall i$. 
 
-M. Kaykobad studied the condition of the positive solution for specific linear system, whose diagnal elements of ${\bf{F}}$ and elemenst of $\vec{I}$ are larger than zero and ${\bf{F}}$ is non-negative matrix. If for all $j,k = 1, 2, \dots n$,
+M. Kaykobad studied the condition of the positive solution for specific linear system, whose diagnal elements of ${\bf{F}}$ and elemenst of ${I}$ are larger than zero and ${\bf{F}}$ is non-negative matrix. If for all $j,k = 1, 2, \dots n$,
 
-$$\vec{I}_j > \sum_{k=1, k \neq j}^n \frac{{\bf{F}}_{jk}}{{\bf{F}}_{kk}} \vec{I}_k $$
+$${I}_j > \sum_{k=1, k \neq j}^n \frac{{\bf{F}}_{jk}}{{\bf{F}}_{kk}} {I}_k $$
 
-then, matrix ${\bf{F}}$ is invertible and solution $\vec{\sigma_C} = {\bf{F}}^{-1}\vec{I}$ is postive solution whose elements are all positive. 
+then, matrix ${\bf{F}}$ is invertible and solution ${\sigma_C} = {\bf{F}}^{-1}{I}$ is postive solution whose elements are all positive. 
 
-Our system satisfies all pre-condition of the Kaykobad's Theorem. In addition, our matrix ${\bf{F}}$ has unit diagonal entry and $\vec{I} = (I_0, I_0, \dots , I_0)^T$. With that, the condtion state the diagonal dominant property of ${\bf{F}}$. Define the number $n_{max}$ as the maximum number of sample points which have positive solution. The solution $\vec{\sigma_C}>>0$ for $n\leq n_{max}$, and $\exist \vec{\sigma_C}_k \leq 0$ for $n>n_{max}$.
+Our system satisfies all pre-condition of the Kaykobad's Theorem. In addition, our matrix ${\bf{F}}$ has unit diagonal entry and all ${I}$ elements are same. With that, the condtion state the diagonal dominant property of ${\bf{F}}$. Define the number $n_{max}$ as the maximum number of sample points which have positive solution. The solution ${\sigma_C}>>0$ for $n\leq n_{max}$, and $\exist {\sigma_C}_k \leq 0$ for $n>n_{max}$.
 
 The equation (diagonal dominant) can be rewritten as
 
@@ -95,7 +100,7 @@ $$f_n(x) = \frac{f(x)}{f(0)}$$
 
 $max(f_n) = f_n(0) = 1$ and with a relationship of Reimann sum and integral we can show next,
 
-$$\int_{a}^{a+W} f_n(x) \, dx \geq \sum_{k=1, k \neq j}^n f_n(x_k) (\frac{W}{n})$$
+$$\int_{a}^{a+W} f_n(x) \, dx \geq \sum_{k=1, k \neq j}^n f_n(|j-k|\frac{W}{n}) (\frac{W}{n})$$
 
 $a \in [-\frac{W}{2}, \frac{W}{2}]$. 
 
@@ -107,12 +112,15 @@ For specific $m$, the maximum case of the summation is the row that the diagonal
 
 $$ n_{max} = \lfloor {W}{/\int_{-\frac{W}{2}}^{\frac{W}{2}} f_n(x) \, dx} \rfloor = \lfloor 1/ _2F_1(\frac{1}{2}, \frac{m+2}{2}; \frac{3}{2}; - (\frac{W}{2H})^2) \rfloor$$
 
+where $_2F+1$ is a Gaussian Hypergeometic function, or just directly test using middle row of the matrix with $p=n/2$ for even $n$ and $p = (n+1)/2$ for odd $n$. The $n_{max}$ is a maximum $n$ which satisfies next
+
+$$1 > \sum_{k=1, k \neq p}^{n} f_n(|p-k|\frac{W}{n}) $$
 
 When Lambertian model number $m$ increases, the distribution function $f(x,t)$ become more similar to Kronecter delta function. If $m$ decreases, the non-diagonal term become larger than before, so that the matrix easily loose diagonal dominant charateristic at smaller $n$.
 
 **[Fig: m= 80, n= 20, n =50 comparsion]**
 
-The problem arise, when $m$ is small. Such case, we cannot find enough sample points for $\sigma_C(x)$. Even though, $n$ overcome the $n_{max}$, we can find meaningful samples, if $n - n_{max}$ is small. However, the greater value of gap $n - n_{max}$, the solution becomes less meaningful.
+The problem arise, when $m$ is small. Such case, we cannot find enough sample points for $\sigma_C(x)$. Even though, $n$ overcome the $n_{max}$, we can obtain meaningful samples, if $n - n_{max}$ is small. However, the greater value of gap $n - n_{max}$, the solution becomes less meaningful.
 
 **[m=3, $n$= $n_{limt}$, $n$>$n_{limt}$, $n$>>$n_{limt}$,] comparsion**
 
@@ -120,7 +128,24 @@ Therefore, when $m$ is too small that we cannot get meaningful number of samples
 
 **[Comparsion with n < $n_{max}$ case, n > $n_{max}$ with inverse matrix and Active set method comparsion, solution and the $F$ multiplication]**
 
-After we get the $\sigma_C$ solution, we need to transform it to discrete LED arrangement $\sigma$. We can assume the value of the $\sigma_C$ as the density of the LED. However, get a formal array solution we need some standard 
+After we get the $\sigma_C$ solution, we need to transform it to discrete LED arrangement $\sigma$. We can assume the value of the $\sigma_C$ as the density of the LED. To determine the precison value of the density, we need some standard case. In this research, we will use Morena's analytic solution $\sigma_M$.
+$$\sigma_M (x) = \sum_{i=1}^N \delta(x-x_i)$$
+
+$$x_{i+1} - x_i = d_M(m)*H$$
+
+and define the system as
+
+$${\bf{F}} ({\sigma}_{MC} + \sigma_{add})= {I}$$
+
+Where $I_i = I_M(0)$, and $\sigma_C = \sigma_{MC} + \sigma_{add}$. The $\sigma_{MC} = (\sigma_{MC}(x_1), \sigma_{MC}(x_2), \dots , \sigma_{MC}(x_n))^T$
+
+$${\bf{F}} {\sigma}_{MC}= {I_M}$$
+
+$I_M = (I_{M1},I_{M2}, \dots , I_{Mn})^T$, $I_{Mk} = I_M(t_k)$
+
+With previous steps, we can calculate the ${\sigma}_{MC}$ and with a $\sigma_{M}(x)$. We can construct accurate discretization transform $D$ such that
+
+$$D(\sigma_{MC}) = \sigma_M$$
 
 
 ### 2-2. 2-dimension Rectangular array
