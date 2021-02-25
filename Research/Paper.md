@@ -148,6 +148,10 @@ With previous steps, we can calculate the ${\sigma}_{MC}$ and with a $\sigma_{M}
 $$D(\sigma_{MC}) = \sigma_M$$
 
 
+Finally, applying the transform $D$ to $\sigma_{MC}$ and we get a optimized solution $\sigma(x)$
+$$D(\sigma_{MC}) = \sigma(x)$$ 
+
+
 ### 2-2. 2-dimension Rectangular array
 
 ### 2-3. 2-dimension Cicular array

@@ -42,10 +42,11 @@ For Linear and Rectangle Grid Array
 #include <gsl/gsl_vector.h>
 #include <gsl/gsl_siman.h>
 #include <gsl/gsl_errno.h>
-#include<gsl/gsl_integration.h>
-#include<gsl/gsl_matrix.h>
-#include<gsl/gsl_vector.h>
+#include <gsl/gsl_integration.h>
+#include <gsl/gsl_matrix.h>
+#include <gsl/gsl_vector.h>
 #include <gsl/gsl_deriv.h>
+#include <gsl/gsl_sf_hyperg.h>
 
 
 #define Linear 'L' 
