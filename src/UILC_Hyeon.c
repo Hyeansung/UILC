@@ -127,11 +127,15 @@ inline gsl_vector * UILC_f_Hyeon_Linear_Lamber(UILC_Lamber_LED led, double width
     gsl_matrix * F = gsl_matrix_calloc(dimension, dimenstion);
     gsl_vector * I = gsl_vector_calloc(dimension);
     gsl_vector * sigma = gsl_vector_calloc(dimension);
-    
+
     UILC_matrix_setting_Lamber(F, &UILC_f_Hyeon_matrix_value_Lamber); 
 
-    if(dimension < n_max ||  (dimension == n_max)  ) //inverse
+    if(dimension <= n_max  ) //inverse
     {
+        gsl_permutation p;
+        int signum=0;
+        gsl_linalg_LU_decomp(F,&p,&signum);
+        gsl_linalg_LU_solve(F, p ,I,sigma);
 
     }
     else // active set method
