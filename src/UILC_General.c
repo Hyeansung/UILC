@@ -819,3 +819,21 @@ inline double UILC_f_find_derivative_Poly(
 
     return(d);
 }
+
+
+/*----------------------------------------------------------------------------------------*/
+
+extern inline int UILC_matrix_setting_Lamber(gsl_matrix * A,  double (*f)(UILC_Lamber_LED led, int i, int j))
+{
+    int m = A->size1;
+    int n = A->size2;
+
+    for(int i=0; i<m, ;i++)
+    {
+        for(int j=0; j <n; j++)
+        {
+            gsl_matrix_set(A,i, j, f(led,i,j));
+        }
+    }
+    return(GSL_SUCESS);
+}
