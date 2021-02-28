@@ -148,7 +148,7 @@ With previous steps, we can calculate the ${\sigma}_{MC}$ and with a $\sigma_{M}
 $$D(\sigma_{MC}) = \sigma_M$$
 
 
-Finally, applying the transform $D$ to $\sigma_{MC}$ and we get a optimized solution $\sigma(x)$
+Finally, applying the transform $D$ to $\sigma_{S}$ and we get a optimized solution $\sigma(x)$
 $$D(\sigma_{MC}) = \sigma(x)$$ 
 
 
@@ -159,6 +159,7 @@ $$D(\sigma_{MC}) = \sigma(x)$$
 
 ## 4. Result and discussion
 
+### Reinforcement method
 
 ## 5. Conclusion
 
