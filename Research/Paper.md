@@ -100,15 +100,15 @@ $$f_n(x) = \frac{f(x)}{f(0)}$$
 
 $max(f_n) = f_n(0) = 1$ and with a relationship of Reimann sum and integral we can show next,
 
-$$\int_{a}^{a+W} f_n(x) \, dx \geq \sum_{k=1, k \neq j}^n f_n(|j-k|\frac{W}{n}) (\frac{W}{n})$$
+$$\int_{a_{nk}}^{a_{nk}+W} f_n(x) \, dx \geq \sum_{k=1, k \neq j}^n f_n(|j-k|\frac{W}{n}) (\frac{W}{n})$$
 
-$a \in [-\frac{W}{2}, \frac{W}{2}]$. 
+$a_{nk} =\frac{W}{2}(\frac{k}{n}-1)$, $k = 1, 2, \dots n$. 
 
 **[Picture?]**
 
 
 
-For specific $m$, the maximum case of the summation is the row that the diagonal element exist on middle of it. If matrix satiesfies the equation in maximum case, it holds other rows automatically. Such case is $a \approx - \frac{W}{2}$. Therefore, we can determine the $n_{max}$ as next.
+For specific $m$, the maximum case of the summation is the row that the diagonal element exist on middle of it. If matrix satiesfies the equation in maximum case, it holds other rows automatically. Such case is $a_{n1}  = \frac{W}{2}(\frac{1}{n} -1)$. If we reduce the calculation process with  $a_{n1}\approx - \frac{W}{2}$, we can determine the $n_{max}$ as next. [Appnedix Approx]
 
 $$ n_{max} = \lfloor {W}{/\int_{-\frac{W}{2}}^{\frac{W}{2}} f_n(x) \, dx} \rfloor = \lfloor 1/ _2F_1(\frac{1}{2}, \frac{m+2}{2}; \frac{3}{2}; - (\frac{W}{2H})^2) \rfloor$$
 
