@@ -149,12 +149,6 @@ inline double UILC_f_s_matrix_value_Poly(UILC_Poly_LED led, int i, int j, double
     return(UILC_f_get_intensity_Poly(led, theta));    
 }
 
-inline int UILC_f_Hyeon_s_ASM(gsl_matrix * A, gsl_vector * b, gsl_vector * result, double epsilon)//Active Set method
-{
-
-}
-
-
 extern inline int UILC_f_s_matrix_setting_Lamber(gsl_matrix * A,  double (*f)(UILC_Lamber_LED led, int i, int j,))
 {
     int m = A->size1;
