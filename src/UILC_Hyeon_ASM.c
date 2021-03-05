@@ -1,5 +1,11 @@
 #include "../include/UILC.h"
 
+// Verification is needed
+
+inline static int s_f_sort_compare(void *a, void * b)
+{
+  return (((int *)a > (int *)b)? 1:0); 
+}
 
 inline static int s_ASM_R_initiaize(int * R, n)
 {
@@ -55,7 +61,34 @@ inline static int s_ASM_get_max_w_R(
 }
 
 //-------------------------------------------------
-inline static s_ASM_R2P(R,P,j)
+inline static int s_ASM_R2P(int * R, int * P, int j,int nr, int np)
+{
+  P[np] = j;
+  np ++;
+  qsort(P, np, sizeof(int), s_f_sort_compare);
+  
+  int k=0;
+  for(int i =0; i< nr, i++)
+  {
+    if((R[i] == j || k ==1))
+    {
+      k=1;
+      
+      if(i != nr-1)
+      {
+        R[i] = R[i+1];
+      }
+      else
+      {
+        R[i] = 0;
+      }
+      
+    }
+  }
+  
+  return(0);
+  
+}
 //-------------------------------------------------
 
 //-------------------------------------------------
@@ -66,6 +99,8 @@ inline static gsl_matrix * s_ASM_get_A_P(gsl_matrix * A, int * P, int np, int n)
     {
         gsl_matrix_set_col(A_P, i , gsl_matrix_get_col(A,P[i]))
     }
+    
+    return(A_P);
 }
 //-------------------------------------------------
 
@@ -73,8 +108,12 @@ inline static gsl_matrix * s_ASM_get_A_P(gsl_matrix * A, int * P, int np, int n)
 inline static s_ASM_s_P_setting(s,P,A_P,b)
 {
     gsl_vector * y = gsl_vecotr_calloc(n);
-
-
+    gsl_matrix * As  = gsl_matrix_calloc(n,n);
+    gsl_blas_dgemm(CblasTrans, CblasNoTrans, 1.0,A_P,A_P,0.0,As);
+    gsl_blas_dgemv(CblasTrans,1.0,A_P,y,0.0,y);
+    gsl_blas_dgemv(CblasNoTrans,1.0,As,y,0.0,y);
+    
+    
     for(int i =0; i < np, i++)
     {
         gsl_vector_set(s, P[i], gsl_vector_get(y,i));
@@ -84,21 +123,60 @@ inline static s_ASM_s_P_setting(s,P,A_P,b)
 //-------------------------------------------------
 
 //-------------------------------------------------
-inline static s_ASM_s_R_setting(s,R,A_P,b)
+inline static s_ASM_s_R_setting(
+  gsl_vector *s,
+  int *R
+  int nr)
+{
+  for(int i=0; i<nr; i++)
+  {
+    gsl_vector_set(s,R[i],0.0); 
+  }
+}
+
 //-------------------------------------------------
 
 //-------------------------------------------------
-inline static s_ASM_min_a(x,s,P)
+inline static double s_ASM_a_min(
+  gsl_vector *x,
+  gsl_vector *s,
+  int *P
+  int np
+)
+{
+  double min = x[0]/(x[0]-s[0]);
+  double g = 0.0;
+  for(int i=0; i<np;i++)
+  {
+    if(s[P[i]] < 0 || fabs(s[P[i]] - 0.0) < DBL_EPSILON)
+    {
+      g = x[i]/(x[i]-s[i]);
+      
+      if(min > g)
+      {
+        min = g;
+      }
+    }
+  }
+  return(min);
+}
 //-------------------------------------------------
+
+
 
 //-------------------------------------------------
 inline static s_ASM_R2P_all(int *R,int *P, int nr, int np )
 {
-    for(int i=0; i<nr ; i++)
+  int j=0;
+    for(int i=0; i<np ; i++)
     {
-        P[i+np] = R[i];
+      if(x[P[i]] <0 || fabs(x[P[i]] - 0.0 ) <DBL_EPSILON)
+      {
+        R[nr+j]=P[i];
+        j++;
+      }
     }
-    sorting
+    qsort(R, nr, sizeof(int), s_f_sort_compare);
     return(0);
 }
 //-------------------------------------------------
