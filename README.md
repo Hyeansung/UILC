@@ -1,3 +1,10 @@
+<script type="text/x-mathjax-config">
+MathJax.Hub.Config({
+    displayAlign: "center"
+});
+</script>
+
+
 # UILC (**U**niform **I**llumination **L**ED arrangement **C**alculatiuon)
 This repository is for the calculation of the uniform illumincation LED arrangement for target plane
 
