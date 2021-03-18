@@ -196,7 +196,7 @@ inline static int s_ASM_get_size_RorP(int *R, n)
 }
 
 
-inline static int UILC_f_Hyeon_s_ASM(
+inline int UILC_f_Hyeon_s_ASM(
     gsl_matrix * A, 
     gsl_vector * b, 
     gsl_vector * result, 
@@ -250,4 +250,5 @@ inline static int UILC_f_Hyeon_s_ASM(
         
     } while ( s_ASM_size(R) != 0 && s_ASM_max_w_R(w,R) > epsilon);
 
+    gsl_vector_memcpy(result,x);
 }
