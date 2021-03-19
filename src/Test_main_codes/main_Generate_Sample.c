@@ -4,9 +4,6 @@
 
 #define CLEARINBUFFER while(getchar() != '\n');
 
-
-// Generate the Sample data of give m and H
-
 int main(void)
 {
     
@@ -55,7 +52,7 @@ int main(void)
     
     fp = fopen(filename, "w+");
     
-    fprintf(fp,"m, LED_intensity, Middle_Intensity, #_led, dm, height, D, Area_L, Area_HD, Area_FD, 90%% \n");
+    fprintf(fp,"m, LED_intensity, Middle_Intensity, #_led, dm, height, D, Area_L, Area_HD, Area_FD, 90%\n");
     //fprintf(fp,"x,f(x)\n");
     /*
     height = 0.05;
@@ -86,25 +83,23 @@ int main(void)
     */
     led.m =2.0;
     init_led = 2;
-    while(led.m<4.0)
+    while(led.m<101.0)
     {
-        height = 0.02;
-        while(height < 0.05)
+        height = 0.05;
+        while(height < 0.5)
         {
             init_led =2;
             while(init_led<30)
             {
-                printf("=================================================================================\n");
                 printf("      m,  #_led, height\n");
-                printf("case: %.0f, %d, %le\n", led.m, init_led, height);
-                printf("=================================================================================\n");
+                printf("case: %le, %d, %le\n", led.m, init_led, height);
 
                 double dm = UILC_f_Morena_getdm_Linear(led,init_led,iter,min_selector,roo_selector,DBL_EPSILON);
                 arr = UILC_f_Morena_get_Arr(dm,height,1,init_led);
                 gsl_vector_set(vec,2,height);
                 arr.Max_I = UILC_f_get_intensity_arr_Lamber_target(arr, led, vec);
 
-                sprintf(filename2,"./data/plot/p_%d_%d_%.3f.csv",(int)led.m,init_led,height);
+                sprintf(filename2,"./data/plot/p_%d_%d_%.5f.csv",(int)led.m,init_led,height);
 
                 fp2 = fopen(filename2, "w+");
                 fprintf(fp2, "x, f(x)\n");
@@ -151,9 +146,9 @@ int main(void)
 
                 init_led++;
             }
-            height += 0.005;
+            height += 0.05;
         }
-        led.m+= 1.0;
+        led.m++;
     }   
 
     printf("End\n");

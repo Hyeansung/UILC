@@ -37,7 +37,7 @@ $$I'(t) := \sum_{i=1}^N I'(x_i,t)= I_0 \sum_{i=1}^N \frac{H^m}{(H^2 + (x_i - t)^
 
 for $N$ LEDs. To reduce the complexity of the calculation we consider all LEDs have same optical properties in radiation power and distribution.
 
-The $I_0$ is differ as the power consumption condition of the LED and does not matter in this case so, we wikll define the $I(t)$ as next. 
+The $I_0$ is differ as the power consumption condition of the LED and does not matter in this case so, we wil l define the $I(t)$ as next. 
 
 $$I(t) =\sum_{i=1}^N I'(x_i,t)/I_0=  \sum_{i=1}^N \frac{H^m}{(H^2 + (x_i - t)^2)^(\frac{m}{2} +1)}$$
 
